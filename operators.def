@@ -1,0 +1,73 @@
+
+#if !(defined(PROCESS_BINARY)) && !(defined(PROCESS_PREFIX)) && !(defined(PROCESS_POSTFIX)) && !(defined(PROCESS_CAST))
+#error "Define any of used macros before including \"operators.def\""
+#else 
+
+#ifndef PROCESS_BINARY
+#define PROCESS_BINARY(...)
+#endif
+
+#ifndef PROCESS_SPECIAL_BINARY
+#define PROCESS_SPECIAL_BINARY(NAME, OP) PROCESS_BINARY(NAME, OP)
+#endif
+
+#ifndef PROCESS_PREFIX
+#define PROCESS_PREFIX(...)
+#endif
+
+#ifndef PROCESS_POSTFIX
+#define PROCESS_POSTFIX(...)
+#endif
+
+#ifndef PROCESS_CAST
+#define PROCESS_CAST(...)
+#endif
+
+
+// auxilliary file, containing definitions for processing of different operators of c++
+
+PROCESS_BINARY(plus,            + )
+PROCESS_BINARY(minus,           - )
+PROCESS_BINARY(multiplies,      * )
+PROCESS_BINARY(divides,         / )
+PROCESS_BINARY(modulus,         % )
+PROCESS_BINARY(bit_and,         & )
+PROCESS_BINARY(bit_or,          | )
+PROCESS_BINARY(bit_xor,         ^ )
+PROCESS_BINARY(logical_and,     &&)
+PROCESS_BINARY(logical_or,      ||)
+PROCESS_BINARY(equal_to,        ==)
+PROCESS_BINARY(not_equal_to,    !=)
+PROCESS_BINARY(left_shift,      <<)
+PROCESS_BINARY(right_shift,     >>)
+PROCESS_BINARY(greater,         > )
+PROCESS_BINARY(greater_equal,   >=)
+PROCESS_BINARY(less,            < )
+PROCESS_BINARY(less_equal,      <=)
+#define COMMA ,
+PROCESS_BINARY(comma,           COMMA)
+#undef COMMA
+PROCESS_SPECIAL_BINARY(indirect_member, .*)
+PROCESS_SPECIAL_BINARY(indirect_arrow,  ->*)
+PROCESS_PREFIX(negate,          - )
+PROCESS_PREFIX(logical_not,     ! )
+PROCESS_PREFIX(bit_not,         ~ )
+PROCESS_PREFIX(positive,        + )
+PROCESS_PREFIX(increment,       ++)
+PROCESS_PREFIX(decrement,       --)
+PROCESS_PREFIX(dereference,     * )
+PROCESS_PREFIX(take_pointer,    & )
+PROCESS_POSTFIX(post_increment, ++)
+PROCESS_POSTFIX(post_decrement, --)
+PROCESS_CAST(dynamic_cast,      dynamic_cast)
+PROCESS_CAST(static_cast,       static_cast)
+PROCESS_CAST(const_cast,        const_cast)
+PROCESS_CAST(reinterpret_cast,  reinterpret_cast)
+
+#undef PROCESS_BINARY
+#undef PROCESS_SPECIAL_BINARY
+#undef PROCESS_PREFIX
+#undef PROCESS_POSTFIX
+#undef PROCESS_CAST
+
+#endif 
