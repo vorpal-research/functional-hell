@@ -13,22 +13,17 @@
 
 ////////////////////////
 
-using namespace functional_hell::matchers::impl_;
+using namespace functional_hell::matchers;
 
 template<class ...Elems>
 using storage_t = match_result<Elems...>;
-
-template<class ...Args>
-storage_t<Args...> mkStorage(Args&&... args) {
-	return storage_t{ std::forward_as_tuple<Args...>(args...); }
-}
 
 template<class Tuple, class ...Args>
 struct applicate;
 
 template<class Head, class ...Tail, class Arg0, class ...Args>
 struct applicate< match_result<Head, Tail...>, Arg0, Args... > {
-	using elements = Arg0::template elements<Head>;
+	using elements = typename Arg0::template elements<Head>;
 	using type = merge_all_t<elements, typename applicate< match_result<Tail...>, Args... >::type >;
 };
 
@@ -37,34 +32,79 @@ struct applicate< match_result<> > {
 	using type = merge_all_t<>;
 };
 
-template<class Derived, class ...Args>
+template<size_t S, class Storage, class MatchRes, class ...Args>
+struct unapplier {
+	static constexpr size_t K = sizeof...(Args) - S;
+	static bool doIt(Storage& storage, MatchRes&& mres) {
+		if(!type_at_t<K, match_result<Args...>>::template unapply_impl(storage, get<K>(mres))) return false;
+		return unapplier<S-1, Storage, MatchRes, Args...>::doIt(storage, std::forward<MatchRes>(mres));
+	}
+};
+
+template<class Storage, class MatchRes, class ...Args>
+struct unapplier<0, Storage, MatchRes, Args...> {
+	static bool doIt(Storage&, MatchRes&&) {
+		return true;
+	}
+};
+
+template<class T> struct no_ref_c { using type = T; };
+template<class T> struct no_ref_c<T&> { using type = T; };
+template<class T> struct no_ref_c<T&&> { using type = T; };
+template<class T> struct no_ref_c<match_reference<T>> { using type = T; };
+template<class T> struct no_ref_c<match_reference<T>&> { using type = T; };
+template<class T> struct no_ref_c<const match_reference<T>&> { using type = T; };
+template<class T> struct no_ref_c<match_reference<T>&&> { using type = T; };
+
+template<class T>
+using no_ref = typename no_ref_c<T>::type;
+
+template<class T> struct lower_ref { using type = T; };
+template<class T> struct lower_ref<match_reference<T>> { using type = T&; };
+template<class T> struct lower_ref<match_reference<T>&> { using type = T&; };
+template<class T> struct lower_ref<match_reference<T>&&> { using type = T&; };
+
+template<class T>
+using lower_ref_t = typename lower_ref<T>::type;
+
+template< class T >
+T& unwrap( T& t ) {
+	return t;
+}
+template<class T>
+T& unwrap(match_reference<T> ref) {
+	return ref.get();
+}
+
+template<class Lam, class ...Args>
 struct matcher {
 
 	template<class V>
-	using unapplied = decltype(Derived::unapply(std::declval<V>()));
+	using unapplied = decltype(Lam::unapply(std::forward<lower_ref_t<V>>(std::declval<lower_ref_t<V>>())));
 
 	template<class V>
-	using elements = typename applicate< unapplied<V>, Args... >;
+	using elements = typename applicate< unapplied<V>, Args... >::type;
 
 	template<class T, class V>
 	static bool unapply_impl(T& storage, V&& v) {
-		auto ret = Derived::unapply(std::forward<V>(v));
+		auto ret = Lam :: unapply(unwrap(v));
 		if(!ret) return false;
 
-		// HOW?
-
-		if(!Arg0::unapply_impl(storage, ret->first)) return false;
-		if(!Arg1::unapply_impl(storage, ret->second)) return false;
-		return true;
+		return unapplier<sizeof...(Args), T, decltype(ret), Args...>::doIt(storage, std::move(ret));
 	}
 
 	template<class V>
 	map2result_t<elements<V>> match(V&& v) {
-		rettype ret;
+		map2result_t<elements<V>> ret;
 
-		if(!unapply_impl(ret, std::forward<V>(v))) return;
+		if(!unapply_impl(ret, std::forward<V>(v))) return map2result_t<elements<V>>();
 
 		return std::move(ret);
+	}
+
+	template<class V>
+	map2result_t<elements<V>> operator >> (V&& v) {
+		return match(std::forward<V>(v));
 	}
 
 };
@@ -76,11 +116,12 @@ struct placeholder {
 	using elements = int_type_map< map_entry< N, V >, nil_map >;
 
 	template<class T, class V>
-	bool unapply_impl(T& storage, V&& value) {
+	static bool unapply_impl(T& storage, V&& value) {
 		if(!storage) storage.construct();
-
-		// HOW?
-		storage->set_0(std::forward<V>(value));
+		if(is_set<N>(storage)) {
+			return get<N>(storage) == std::forward<V>(value);
+		}
+		set<N>(storage, std::forward<V>(value));
 		return true;
 	}
 };
@@ -100,7 +141,7 @@ struct ignore {
 	using elements = nil_map;
 
 	template<class T, class V>
-	bool unapply_impl(T& storage, V&& value) {
+	static bool unapply_impl(T&, V&&) {
 		return true;
 	}
 };
@@ -108,11 +149,17 @@ struct ignore {
 static ignore _;
 
 template<class Arg0, class Arg1>
-struct example_matcher: public matcher<Arg0, Arg1> {
+struct example_matcher {
+
 	template<class A, class B>
-	storage_t<A, B> unapply(const std::pair<A, B>& v) {
-		return mkStorage(v.first, v.second);
+	static storage_t<match_reference<A>, match_reference<B>> unapply(std::pair<A, B>& v) {
+		storage_t<match_reference<A>, match_reference<B>> ret;
+		ret.construct();
+		ret->set_1(v.first);
+		ret->set_2(v.second);
+		return ret;
 	}
+
 };
 
 #endif /* MATCHERS_HPP_ */

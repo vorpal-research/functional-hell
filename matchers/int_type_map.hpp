@@ -12,7 +12,6 @@
 
 namespace functional_hell {
 namespace matchers {
-namespace impl_ {
 
 template<int Kx, class Vx>
 struct map_entry {
@@ -164,13 +163,13 @@ template<class Map0, class Map1>
 struct merge_maps;
 
 template<class Map>
-struct merge_maps<Map, nil_map> {
+struct merge_maps<nil_map, Map> {
 	using type = Map;
 };
 
-template<class Map>
-struct merge_maps<nil_map, Map> {
-	using type = Map;
+template<>
+struct merge_maps<nil_map, nil_map> {
+	using type = nil_map;
 };
 
 template<class A, class B>
@@ -227,7 +226,7 @@ struct merge_all<> {
 template<class ...Maps>
 using merge_all_t = typename merge_all<Maps...>::type;
 
-}
+
 }
 }
 
