@@ -158,6 +158,7 @@ struct tree_matcher: matcher {
     template<class V>
     impl_::map2result_t<elements<V>> match(V&& v) {
         impl_::map2result_t<elements<V>> ret;
+        ret.construct();
 
         if(!unapply_impl(ret, std::forward<V>(v))) return impl_::map2result_t<elements<V>>();
 
