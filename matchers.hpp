@@ -16,7 +16,7 @@
 using namespace functional_hell::matchers;
 
 template<class ...Elems>
-using storage_t = match_result<Elems...>;
+using storage_t = match_result<wrap_t<Elems>...>;
 
 template<class Tuple, class ...Args>
 struct applicate;

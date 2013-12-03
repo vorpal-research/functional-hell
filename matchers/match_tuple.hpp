@@ -518,6 +518,11 @@ public:
 
 };
 
+template<class T> struct wrap { using type = T; };
+template<class T> struct wrap<T&> { using type = match_reference<T>; };
+template<class T> using wrap_t = typename wrap<T>::type;
+
+
 
 
 }
