@@ -1,8 +1,5 @@
 /*
  * generic_operators.hpp
- *
- *  Created on: Nov 10, 2013
- *      Author: belyaev
  */
 
 #ifndef GENERIC_OPERATORS_HPP_

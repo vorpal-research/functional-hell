@@ -1,8 +1,5 @@
 /*
  * named_operators.hpp
- *
- *  Created on: Nov 10, 2013
- *      Author: belyaev
  */
 
 #ifndef NAMED_OPERATORS_HPP_
@@ -93,8 +90,8 @@ constexpr unary_named_operator<Lam> make_named_unary_operator(Lam lam) {
     return unary_named_operator<Lam>{ lam };
 }
 
-}
-}
+} /* namespace named_operators */
+} /* namespace functional_hell */
 
 #undef MACRO_PASTE0
 #undef MACRO_PASTE

@@ -1,8 +1,5 @@
 /*
  * match_tuple.hpp
- *
- *  Created on: Dec 2, 2013
- *      Author: belyaev
  */
 
 #ifndef MATCH_TUPLE_HPP_
@@ -10,13 +7,21 @@
 
 #include <utility>
 
-#include "matchers/int_type_map.hpp"
+#include "meta.hpp"
 
 namespace functional_hell {
 namespace matchers {
+/*************************************************************************************************/
+
+namespace impl_ {
 
 struct void_ {};
 
+} /* namespace impl_ */
+
+/*************************************************************************************************/
+
+// TODO: auto-generate all this garbage =(
 template<class ...Args>
 struct match_tuple;
 
@@ -26,7 +31,7 @@ struct match_tuple<>{};
 #define FIELD(N) \
 union { \
     Arg ## N _ ## N; \
-    void_ void_ ## N; \
+    impl_::void_ void_ ## N; \
 };\
 template<class ...U> \
 void set_ ## N(U&& ...v) { \
@@ -47,10 +52,10 @@ struct match_tuple<Arg1>{
 
     match_tuple(): void_1{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_1()) set_1(other._1);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_1()) set_1(std::move(other._1));
     }
     ~match_tuple(){
         destroy_1();
@@ -66,12 +71,12 @@ struct match_tuple<Arg1, Arg2>{
 
     match_tuple(): void_1{}, void_2{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
     }
     ~match_tuple(){
         destroy_1();
@@ -89,14 +94,14 @@ struct match_tuple<Arg1, Arg2, Arg3>{
 
     match_tuple(): void_1{}, void_2{}, void_3{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
     }
     ~match_tuple(){
         destroy_1();
@@ -116,16 +121,16 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4>{
 
     match_tuple(): void_1{}, void_2{}, void_3{}, void_4{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
-    	if(other.is_set_4()) set_4(other._4);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_4()) set_4(other._4);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
-    	if(other.is_set_4()) set_4(std::move(other._4));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_4()) set_4(std::move(other._4));
     }
     ~match_tuple(){
         destroy_1();
@@ -147,18 +152,18 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5>{
 
     match_tuple(): void_1{}, void_2{}, void_3{}, void_5{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
-    	if(other.is_set_4()) set_4(other._4);
-    	if(other.is_set_5()) set_5(other._5);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_4()) set_4(other._4);
+        if(other.is_set_5()) set_5(other._5);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
-    	if(other.is_set_4()) set_4(std::move(other._4));
-    	if(other.is_set_5()) set_5(std::move(other._5));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_4()) set_4(std::move(other._4));
+        if(other.is_set_5()) set_5(std::move(other._5));
     }
     ~match_tuple(){
         destroy_1();
@@ -182,20 +187,20 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6>{
 
     match_tuple(): void_1{}, void_2{}, void_3{}, void_5{}, void_6{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
-    	if(other.is_set_4()) set_4(other._4);
-    	if(other.is_set_5()) set_5(other._5);
-    	if(other.is_set_6()) set_6(other._6);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_4()) set_4(other._4);
+        if(other.is_set_5()) set_5(other._5);
+        if(other.is_set_6()) set_6(other._6);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
-    	if(other.is_set_4()) set_4(std::move(other._4));
-    	if(other.is_set_5()) set_5(std::move(other._5));
-    	if(other.is_set_6()) set_6(std::move(other._6));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_4()) set_4(std::move(other._4));
+        if(other.is_set_5()) set_5(std::move(other._5));
+        if(other.is_set_6()) set_6(std::move(other._6));
     }
     ~match_tuple(){
         destroy_1();
@@ -221,22 +226,22 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7>{
 
     match_tuple(): void_1{}, void_2{}, void_3{}, void_5{}, void_6{}, void_7{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
-    	if(other.is_set_4()) set_4(other._4);
-    	if(other.is_set_5()) set_5(other._5);
-    	if(other.is_set_6()) set_6(other._6);
-    	if(other.is_set_7()) set_7(other._7);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_4()) set_4(other._4);
+        if(other.is_set_5()) set_5(other._5);
+        if(other.is_set_6()) set_6(other._6);
+        if(other.is_set_7()) set_7(other._7);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
-    	if(other.is_set_4()) set_4(std::move(other._4));
-    	if(other.is_set_5()) set_5(std::move(other._5));
-    	if(other.is_set_6()) set_6(std::move(other._6));
-    	if(other.is_set_7()) set_7(std::move(other._7));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_4()) set_4(std::move(other._4));
+        if(other.is_set_5()) set_5(std::move(other._5));
+        if(other.is_set_6()) set_6(std::move(other._6));
+        if(other.is_set_7()) set_7(std::move(other._7));
     }
     ~match_tuple(){
         destroy_1();
@@ -264,24 +269,24 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8>{
 
     match_tuple(): void_1{}, void_2{}, void_3{}, void_5{}, void_6{}, void_7{}, void_8{} {};
     match_tuple(const match_tuple& other) {
-    	if(other.is_set_1()) set_1(other._1);
-    	if(other.is_set_2()) set_2(other._2);
-    	if(other.is_set_3()) set_3(other._3);
-    	if(other.is_set_4()) set_4(other._4);
-    	if(other.is_set_5()) set_5(other._5);
-    	if(other.is_set_6()) set_6(other._6);
-    	if(other.is_set_7()) set_7(other._7);
-    	if(other.is_set_8()) set_8(other._8);
+        if(other.is_set_1()) set_1(other._1);
+        if(other.is_set_2()) set_2(other._2);
+        if(other.is_set_3()) set_3(other._3);
+        if(other.is_set_4()) set_4(other._4);
+        if(other.is_set_5()) set_5(other._5);
+        if(other.is_set_6()) set_6(other._6);
+        if(other.is_set_7()) set_7(other._7);
+        if(other.is_set_8()) set_8(other._8);
     }
     match_tuple(match_tuple&& other) {
-    	if(other.is_set_1()) set_1(std::move(other._1));
-    	if(other.is_set_2()) set_2(std::move(other._2));
-    	if(other.is_set_3()) set_3(std::move(other._3));
-    	if(other.is_set_4()) set_4(std::move(other._4));
-    	if(other.is_set_5()) set_5(std::move(other._5));
-    	if(other.is_set_6()) set_6(std::move(other._6));
-    	if(other.is_set_7()) set_7(std::move(other._7));
-    	if(other.is_set_8()) set_8(std::move(other._8));
+        if(other.is_set_1()) set_1(std::move(other._1));
+        if(other.is_set_2()) set_2(std::move(other._2));
+        if(other.is_set_3()) set_3(std::move(other._3));
+        if(other.is_set_4()) set_4(std::move(other._4));
+        if(other.is_set_5()) set_5(std::move(other._5));
+        if(other.is_set_6()) set_6(std::move(other._6));
+        if(other.is_set_7()) set_7(std::move(other._7));
+        if(other.is_set_8()) set_8(std::move(other._8));
     }
     ~match_tuple(){
         destroy_1();
@@ -301,7 +306,7 @@ private:
 template<class ...Args>
 class match_result {
     union {
-        void_ null;
+        impl_::void_ null;
         match_tuple<Args...> data;
     };
     bool success;
@@ -339,14 +344,14 @@ public:
 
     match_result(): null{}, success{false} {};
     match_result(const match_result& other): null{}, success(other.success) {
-    	if(success) {
-    		construct(other.data);
-    	}
+        if(success) {
+            construct(other.data);
+        }
     }
     match_result(match_result&& other): null{}, success(other.success) {
-    	if(success) {
-    		construct(std::move(other.data));
-    	}
+        if(success) {
+            construct(std::move(other.data));
+        }
     }
     ~match_result(){ destruct(); }
 };
@@ -362,23 +367,33 @@ public:
     }
 };
 
+/*************************************************************************************************/
+
+template<class A, class B>
+using match_pair = match_result<A, B>;
 using match_bool = match_result<>;
 
-template<size_t N, class Tup>
-struct type_at;
+/*************************************************************************************************/
 
+template<std::size_t N, class Tup> struct type_at;
 template<class Head, class ...Args>
 struct type_at<0U, match_result<Head, Args...>> {
     using type = Head;
 };
 
-template<size_t N, class Head, class ...Args>
+template<std::size_t N, class Head, class ...Args>
 struct type_at<N, match_result<Head, Args...>> {
     using type = typename type_at<N-1, match_result<Args...>>::type;
 };
 
-template<size_t N, class Tup>
+template<std::size_t N, class Tup>
 using type_at_t = typename type_at<N, Tup>::type;
+
+/*************************************************************************************************/
+
+namespace impl_ {
+
+/*************************************************************************************************/    
 
 template<class H, class T>
 struct cons_match_result;
@@ -387,6 +402,9 @@ template<class H, class ...Els>
 struct cons_match_result<H, match_result<Els...>> {
     using type = match_result<H, Els...>;
 };
+
+
+/*************************************************************************************************/
 
 template<class L>
 struct list2result;
@@ -404,23 +422,26 @@ struct list2result<nil> {
     using type = match_result<>;
 };
 
+/*************************************************************************************************/
+
 template<class Map>
 using map2result_t = typename list2result<
-                         typename map2list<Map>::type
+                         typename impl_::map2list<Map>::type
                      >::type;
 
-template<size_t N, class Res>
-struct getter;
+/*************************************************************************************************/
+
+template<std::size_t N, class Res> struct getter;
 
 #define GETTER_FOR(N) \
 template<class ...T> \
 struct getter<(N-1), match_result<T...>> { \
-	static auto apply(match_result<T...>& res) -> decltype(res->_ ## N) { \
-    	return res->_ ## N; \
-	}\
-	static auto apply(const match_result<T...>& res) -> decltype(res->_ ## N) { \
-		return res->_ ## N; \
-	} \
+    static auto apply(match_result<T...>& res) -> decltype(res->_ ## N) { \
+        return res->_ ## N; \
+    }\
+    static auto apply(const match_result<T...>& res) -> decltype(res->_ ## N) { \
+        return res->_ ## N; \
+    } \
 };\
 
 GETTER_FOR(1)
@@ -434,16 +455,17 @@ GETTER_FOR(8)
 
 #undef GETTER_FOR
 
-template<size_t N, class Res>
-struct setter;
+/*************************************************************************************************/
+
+template<std::size_t N, class Res> struct setter;
 
 #define SETTER_FOR(N) \
 template<class ...T> \
 struct setter<(N-1), match_result<T...>> { \
-	template<class U> \
-	static void apply(match_result<T...>& res, U&& val) { \
-    	res->set_ ## N(std::forward<U>(val)); \
-	}\
+    template<class U> \
+    static void apply(match_result<T...>& res, U&& val) { \
+        res->set_ ## N(std::forward<U>(val)); \
+    }\
 };\
 
 SETTER_FOR(1)
@@ -457,15 +479,17 @@ SETTER_FOR(8)
 
 #undef SETTER_FOR
 
-template<size_t N, class Res>
+/*************************************************************************************************/
+
+template<std::size_t N, class Res>
 struct checker;
 
 #define CHECKER_FOR(N) \
 template<class ...T> \
 struct checker<(N-1), match_result<T...>> { \
-	static bool apply(const match_result<T...>& res) { \
-    	return res->is_set_ ## N(); \
-	}\
+    static bool apply(const match_result<T...>& res) { \
+        return res->is_set_ ## N(); \
+    }\
 };\
 
 CHECKER_FOR(1)
@@ -479,53 +503,63 @@ CHECKER_FOR(8)
 
 #undef CHECKER_FOR
 
-template<size_t N, class MRes>
+} /* namespace impl_ */
+
+/*************************************************************************************************/
+
+template<std::size_t N, class MRes>
 type_at_t<N, MRes> get(MRes& m) {
-	return getter<N, MRes>::apply(m);
+    return impl_::getter<N, MRes>::apply(m);
 }
 
-template<size_t N, class MRes>
+template<std::size_t N, class MRes>
 type_at_t<N, MRes> get(const MRes& m) {
-	return getter<N, MRes>::apply(m);
+    return impl_::getter<N, MRes>::apply(m);
 }
 
-template<size_t N, class MRes, class U>
+template<std::size_t N, class MRes, class U>
 void set(MRes& m, U&& value) {
-	return setter<N, MRes>::apply(m, std::forward<U>(value));
+    return impl_::setter<N, MRes>::apply(m, std::forward<U>(value));
 }
 
-template<size_t N, class MRes>
+template<std::size_t N, class MRes>
 bool is_set(const MRes& m) {
-	return checker<N, MRes>::apply(m);
+    return impl_::checker<N, MRes>::apply(m);
 }
 
+/*************************************************************************************************/
+
+// poor man's reference wrapper
 template<class T>
 class match_reference {
-	T* ref;
+    T* ref;
 
 public:
-	match_reference(T& ref): ref(&ref) {};
-	match_reference(const match_reference&) = default;
+    match_reference(T& ref): ref(&ref) {};
+    match_reference(const match_reference&) = default;
 
-	T& get() { return *ref; }
-	operator T& () { return get(); }
-	T& operator()() { return get(); }
+    T& get() { return *ref; }
+    operator T& () { return get(); }
+    T& operator()() { return get(); }
 
-	template<class U>
-	T& operator= (U&& u)  {
-		return *ref = std::forward<U>(u);
-	}
+    template<class U>
+    T& operator= (U&& u)  {
+        return *ref = std::forward<U>(u);
+    }
 
 };
 
-template<class T> struct wrap { using type = T; };
-template<class T> struct wrap<T&> { using type = match_reference<T>; };
-template<class T> using wrap_t = typename wrap<T>::type;
+namespace impl_ {
 
+template<class T> struct wrapped { using type = T; };
+template<class T> struct wrapped<T&> { using type = match_reference<T>; };
+template<class T> using wrapped_t = typename wrapped<T>::type;
 
+} /* namespace impl_ */
 
+/*************************************************************************************************/
 
-}
-}
+} /* namespace matchers */
+} /* namespace functional_hell */
 
 #endif /* MATCH_TUPLE_HPP_ */
