@@ -3,7 +3,7 @@
 #include <memory>
 
 // provide the -I.. flag
-#include "matchers_aux.hpp"
+#include "matchers_fancy_syntax.h"
 
 using namespace functional_hell::matchers;
 
@@ -33,36 +33,51 @@ public:
 
 struct IntegerExtractor {
     match_bool unapply(Type::Ptr ptr) const {
-        match_bool ret {dynamic_cast<Integer*>(ptr.get())};
-        return ret;
+        return !!dynamic_cast<Integer*>(ptr.get());
     }
 };
 
 struct PointerExtractor {
     storage_t<Type::Ptr> unapply(Type::Ptr type) const {
-        storage_t<Type::Ptr> ret;
         auto ptr = dynamic_cast<Pointer*>(type.get());
-        if(!ptr) return ret;
 
-        ret.construct();
-        ret->set_1(ptr->getPointee());
-        
-        return ret;
+        if(!ptr) return {};
+
+        return make_storage(ptr->getPointee());
     }
 };
 
-auto $integer = make_pattern(IntegerExtractor{});
-auto $pointer = make_pattern(PointerExtractor{});
+auto Integer_ = make_pattern(IntegerExtractor{});
+auto Pointer_ = make_pattern(PointerExtractor{});
 
 int main () {
-    Type::Ptr tp = std::make_shared<Pointer>(std::make_shared<Pointer>(std::make_shared<Integer>()));
-
+    Type::Ptr tp = std::make_shared<Pointer>(
+                       std::make_shared<Pointer>(
+                           std::make_shared<Integer>()
+                       )
+                   );
     Type::Ptr i = std::make_shared<Integer>();
-    if($pointer($pointer($integer())) >> tp) {
+
+    SWITCH(tp) {
+        CASE(Pointer_(Pointer_(Integer_()))) {
+            std::cerr << "Hit!" << std::endl;
+        }
+        NAMED_CASE(M, Pointer_(_1)) {
+            SWITCH(M->_1) {
+                CASE(Integer_()) {
+                    std::cerr << "eieio" << std::endl;
+                }
+            }
+            std::cerr << M->_1->toString() << std::endl;
+        }
+        DEFAULT_CASE;
+    }
+
+    if(Pointer_(Pointer_(Integer_())) >> tp) {
         std::cerr << "Hit!" << std::endl;
     }
 
-    if(auto m = $pointer(_1) >> tp) {
+    if(auto m = Pointer_(_1) >> tp) {
         std::cerr << m->_1->toString() << std::endl; // integer*
     }
 }

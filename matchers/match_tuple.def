@@ -1,0 +1,80 @@
+#define FIELD(N) \
+union { \
+    Arg ## N _ ## N; \
+    impl_::void_ void_ ## N; \
+};\
+template<class ...U> \
+void set_ ## N(U&& ...v) { \
+    new (&_ ## N) Arg ## N (std::forward<U>(v)...); \
+    assigned |= (1 << N); \
+} \
+bool is_set_ ## N() const { \
+    return !!(assigned & (1 << N)); \
+} \
+void destroy_ ## N() { \
+    if(is_set_ ## N()) _ ## N . ~Arg ## N (); \
+} \
+
+template<
+class Arg1
+#define PROCESS(N) , class Arg ## N
+#include "repeat.def"
+>
+struct match_tuple<
+Arg1
+#define PROCESS(N) , Arg ## N
+#include "repeat.def"
+> {
+    FIELD(1)
+#define PROCESS(N) \
+    FIELD(N)
+#include "repeat.def"
+
+match_tuple(): void_1{}
+#define PROCESS(N) , void_ ## N{}
+#include "repeat.def"
+{}
+
+match_tuple(const match_tuple& other) {   
+    if(other.is_set_1()) set_1(other._1);
+#define PROCESS(N) \
+    if(other.is_set_ ## N ()) set_ ## N (other . _ ## N);
+#include "repeat.def"
+}
+
+template<
+class U1
+#define PROCESS(N) , class U ## N
+#include "repeat.def"
+>
+match_tuple(
+U1&& u1
+#define PROCESS(N) , U ## N && u ## N
+#include "repeat.def"
+) {
+    set_1(std::forward<U1>(u1));
+#define PROCESS(N) \
+    set_ ## N (std::forward<U ## N>(u ## N));
+#include "repeat.def"
+}
+
+match_tuple(match_tuple&& other) {
+    if(other.is_set_1()) set_1(std::move(other._1));
+#define PROCESS(N) \
+    if(other.is_set_ ## N ()) set_ ## N (std::move(other . _ ## N));
+#include "repeat.def"
+}
+
+~match_tuple() {
+    destroy_1();
+#define PROCESS(N) \
+    destroy_ ## N ();
+#include "repeat.def"
+}
+
+private:
+    short assigned = 0;
+
+};
+
+#undef FIELD

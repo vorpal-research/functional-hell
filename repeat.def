@@ -1,0 +1,53 @@
+// poor man'r repeat macro
+#if START == 0
+PROCESS(0)
+#endif
+#if START <= 1  && END >= 1
+PROCESS(1)
+#endif
+#if START <= 2  && END >= 2
+PROCESS(2)
+#endif
+#if START <= 3  && END >= 3
+PROCESS(3)
+#endif
+#if START <= 4  && END >= 4
+PROCESS(4)
+#endif
+#if START <= 5  && END >= 5
+PROCESS(5)
+#endif
+#if START <= 6  && END >= 6
+PROCESS(6)
+#endif
+#if START <= 7  && END >= 7
+PROCESS(7)
+#endif
+#if START <= 8  && END >= 8
+PROCESS(8)
+#endif
+#if START <= 9  && END >= 9
+PROCESS(9)
+#endif
+#if START <= 10 && END >= 10
+PROCESS(10)
+#endif
+#if START <= 11 && END >= 11
+PROCESS(11)
+#endif
+#if START <= 12 && END >= 12
+PROCESS(12)
+#endif
+#if START <= 13 && END >= 13
+PROCESS(13)
+#endif
+#if START <= 14 && END >= 14
+PROCESS(14)
+#endif
+#if START <= 15 && END >= 15
+PROCESS(15)
+#endif
+#if START <= 16 && END >= 16
+PROCESS(16)
+#endif
+#undef PROCESS

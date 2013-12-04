@@ -18,6 +18,12 @@ namespace matchers {
 
 template<class ...Elems> using storage_t = match_result<impl_::wrapped_t<Elems>...>;
 
+template<class ...Elems>
+storage_t<Elems...> make_storage(Elems&&... elems) {
+    return storage_t<Elems...>{ std::forward<Elems>(elems)... };
+}
+
+
 namespace impl_ {
 
 /*************************************************************************************************/
@@ -156,7 +162,7 @@ struct tree_matcher: matcher {
     }
 
     template<class V>
-    impl_::map2result_t<elements<V>> match(V&& v) {
+    impl_::map2result_t<elements<V>> match(V&& v) const{
         impl_::map2result_t<elements<V>> ret;
         ret.construct();
 
@@ -166,7 +172,7 @@ struct tree_matcher: matcher {
     }
 
     template<class V>
-    impl_::map2result_t<elements<V>> operator >> (V&& v) {
+    impl_::map2result_t<elements<V>> operator >> (V&& v) const{
         return match(std::forward<V>(v));
     }
 
