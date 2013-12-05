@@ -27,7 +27,10 @@ const char* color2string_traditional(Color clr) {
 
 bool ptrn(Color a, Color b, Color c, Color d) {
     SWITCH(a,b,c,d) {
-        CASE(R, R, R, R) return true;
+        NAMED_CASE(m, R, R, _1, _1){
+            if(m->_1 == R) return true;
+            else return false;
+        }
         CASE(B, B, B, B) return true;
         CASE(R, R, B, B) return true;
         CASE(B, B, R, R) return true;
