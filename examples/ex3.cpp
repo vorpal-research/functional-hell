@@ -12,8 +12,8 @@ enum Color { R, B };
 
 const char* color2string(Color clr) {
     SWITCH(clr) {
-        CASE(Id(R)) return "Red";
-        CASE(Id(B)) return "Black";
+        CASE(R) return "Red";
+        CASE(B) return "Black";
     }
     return ""; // clang is not very clever about custom syntax constructs
 }
@@ -23,6 +23,16 @@ const char* color2string_traditional(Color clr) {
         case B: return "Black";
     }
     return "";
+}
+
+bool ptrn(Color a, Color b, Color c, Color d) {
+    SWITCH(a,b,c,d) {
+        CASE(R, R, R, R) return true;
+        CASE(B, B, B, B) return true;
+        CASE(R, R, B, B) return true;
+        CASE(B, B, R, R) return true;
+    }
+    return false;
 }
 
 int main() {

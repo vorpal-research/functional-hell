@@ -1,7 +1,7 @@
 #include "matchers_aux.hpp"
 
-#define SWITCH(V)\
-    for(auto a_rather_dedicated_switcher_ = functional_hell::matchers::make_switcher(V);\
+#define SWITCH(...)\
+    for(auto a_rather_dedicated_switcher_ = functional_hell::matchers::make_switcher(__VA_ARGS__);\
         a_rather_dedicated_switcher_;\
         a_rather_dedicated_switcher_.off())
 
