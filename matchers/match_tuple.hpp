@@ -310,6 +310,44 @@ public:
 
 };
 
+/*************************************************************************************************/
+
+template<class It>
+class match_sequence {
+    It begin_;
+    It end_;
+
+public:
+    match_sequence(It begin, It end): begin_(begin), end_(end) {};
+
+    It begin() const { return begin_; }
+    It end() const { return end_; }
+
+    friend bool operator == (const match_sequence& lhv, const match_sequence& rhv) {
+        return lhv.begin_ == rhv.begin_ && lhv.end_ == rhv.end_;
+    }
+};
+
+template<class It>
+match_sequence<It> match_view(It begin, It end) {
+    return {begin, end};
+}
+
+template<class Con>
+auto match_container(const Con& con) -> match_sequence<decltype(std::begin(con))> {
+    return { std::begin(con), std::end(con) };
+}
+
+template<class Con>
+auto match_container(Con& con) -> match_sequence<decltype(std::begin(con))> {
+    return { std::begin(con), std::end(con) };
+}
+
+template<class Con>
+void match_container(Con&& con) = delete;
+
+/*************************************************************************************************/
+
 namespace impl_ {
 
 template<class T> struct wrapped { using type = T; };

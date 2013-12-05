@@ -1,3 +1,5 @@
+#include <tuple>
+
 #include "matchers.hpp"
 
 namespace functional_hell {
@@ -69,6 +71,7 @@ struct TupleExtractor {
     storage_t<Args...> unapply(const std::tuple<Args...>& tup) const {
         return unapply_impl<const std::tuple<Args...>>(tup, make_indexer(tup));
     }
+
 };
 
 static auto Tie = make_pattern(TupleExtractor{});
@@ -84,7 +87,7 @@ struct Switcher {
     bool guard;
 
     template<class ...Pats>
-    auto Case_(const Pats&... pat) const -> decltype(Tie(pat...) >> vals) {
+    auto Case_(const Pats&... pat) -> decltype(Tie(pat...) >> vals) {
         return Tie(pat...) >> vals;
     }
 
@@ -94,6 +97,34 @@ struct Switcher {
 
 template<class ...Ts>
 Switcher<Ts...> make_switcher(Ts&&... v) { return Switcher<Ts...>{ tuple_for_match(std::forward<Ts>(v)...), true }; };
+
+struct ConsExtractor {
+    template<class Con>
+    auto unapply(Con& con) const -> storage_t<decltype(*std::begin(con)), decltype(match_container(con))> {
+        auto beg = std::begin(con);
+        auto end = std::end(con);
+        if(beg == end) return {};
+        else return { *beg, match_view(std::next(beg), end) };
+    }
+
+    template<class Con>
+    auto unapply(const Con& con) const -> storage_t<decltype(*std::begin(con)), decltype(match_container(con))> {
+        auto beg = std::begin(con);
+        auto end = std::end(con);
+        if(beg == end) return {};
+        else return { *beg, match_view(std::next(beg), end) };
+    }
+};
+
+struct NilExtractor {
+    template<class Con>
+    match_bool unapply(const Con& con) const {
+        return std::begin(con) == std::end(con);
+    }
+};
+
+auto Cons = make_pattern(ConsExtractor{});
+auto Nil = make_pattern(NilExtractor{})();
 
 } /* namespace matchers */
 } /* namespace functional_hell */
