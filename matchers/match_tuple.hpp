@@ -310,6 +310,20 @@ public:
         return *ref = std::forward<U>(u);
     }
 
+    friend bool operator == (match_reference lhv, match_reference rhv) {
+        return lhv.get() == rhv.get();
+    }
+
+    template<class U>
+    friend bool operator == (match_reference lhv, const U& rhv) {
+        return lhv.get() == rhv;
+    }
+
+    template<class U>
+    friend bool operator == (const U& lhv, match_reference rhv) {
+        return lhv == rhv.get();
+    }
+
 };
 
 /*************************************************************************************************/

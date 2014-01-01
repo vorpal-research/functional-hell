@@ -4,13 +4,23 @@
 
 namespace functional_hell {
 namespace matchers {
+namespace impl_ {
+
+template<class A>
+using array_to_cpointer = typename std::conditional<
+                              std::is_array<A>::value,
+                              const typename std::remove_extent<A>::type*,
+                              A
+                          >::type;
+
+}
 
 template<class Extractor>
 struct pattern {
     Extractor ex;
 
     template<class ...Args>
-    tree_matcher<Extractor, Args...> operator()(const Args&... args) const {
+    tree_matcher<Extractor, impl_::array_to_cpointer<Args>...> operator()(const Args&... args) const {
         return { ex, args... };
     }
 };
@@ -36,7 +46,7 @@ template<std::size_t Start, class Tup> struct mkIndexer;
 template<std::size_t Start, class H, class ...Tail>
 struct mkIndexer<Start, std::tuple<H, Tail...>> {
     using type = typename cons_sequence<
-                     Start, 
+                     Start,
                      typename mkIndexer<Start+1, std::tuple<Tail...>>::type
                  >::type;
 };
