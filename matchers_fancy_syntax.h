@@ -1,5 +1,6 @@
 #include "matchers_aux.hpp"
 
+// yep, we simulate switch using a for-loop, sorry for this)
 #define SWITCH(...)\
     for(auto a_rather_dedicated_switcher_ = functional_hell::matchers::make_switcher(__VA_ARGS__);\
         a_rather_dedicated_switcher_;\

@@ -1,7 +1,8 @@
 /*
  * match_tuple.hpp
+ * author: Mikhail Beliaev
  * NB: keep this file preprocessed if you find the compilation slowing down!
- * It takes ~ 1 second to preprocess all this include magics 
+ * It takes ~ 1 second to preprocess all this include magics
  */
 
 #ifndef MATCH_TUPLE_HPP_
@@ -23,7 +24,8 @@ struct void_ {};
 
 /*************************************************************************************************/
 
-// TODO: auto-generate all this garbage =(
+// auto-generate all the match_tuple instances using preprocessor magic
+/// XXX: use a code generator for this, as pp-magic seems to slow down the compiler a bit
 template<class ...Args> struct match_tuple;
 template<> struct match_tuple<>{};
 #define START 2
@@ -178,7 +180,7 @@ using type_at_t = typename type_at<N, Tup>::type;
 
 namespace impl_ {
 
-/*************************************************************************************************/    
+/*************************************************************************************************/
 
 template<class H, class T>
 struct cons_match_result;

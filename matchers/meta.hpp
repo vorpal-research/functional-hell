@@ -1,5 +1,6 @@
 /*
  * meta.hpp
+ * author: Mikhail Beliaev
  */
 
 #ifndef META_HPP
@@ -12,11 +13,11 @@ namespace matchers {
 namespace impl_ {
 
 /*************************************************************************************************/
-
+// placeholder class representing, well, nothing
 struct none{};
 
 /*************************************************************************************************/
-
+// int-to-type map entry, essentially a pair of an int and a type
 template<int Kx, class Vx>
 struct map_entry {
     using V = Vx;
@@ -24,17 +25,15 @@ struct map_entry {
 };
 
 /*************************************************************************************************/
-
+// int-to-type map itself
 // empty map
 struct nil_map;
-
 // non-empty map
-template<class HEntry, class Tail>
-struct int_type_map;
+template<class HEntry, class Tail> struct int_type_map;
 
 /*************************************************************************************************/
 
-// ((K V) Rest)
+// ({K: V} Rest)
 template<int K, class V, class Rest>
 struct int_type_map< map_entry<K,V>, Rest > {};
 
@@ -42,7 +41,9 @@ struct int_type_map< map_entry<K,V>, Rest > {};
 template<class ...Entries>
 struct mk_int_type_map;
 
+// mk_int_type_map ... = ()
 template<> struct mk_int_type_map<> { using type = nil_map; };
+// mk_int_type_map HEntry Rest... = (HEntry `(mk_int_type_map Rest...))
 template<class HEntry, class ...Rest>
 struct mk_int_type_map<HEntry, Rest...> {
     using type = int_type_map<HEntry, typename mk_int_type_map<Rest...>::type >;
@@ -55,13 +56,13 @@ template<class ...Entries> using mk_int_type_map_t = typename mk_int_type_map<En
 template<class Map, int Ix>
 struct get_at;
 
-// get_at ((K V) Rest) K = V
+// get_at ({K: V} Rest) K = V
 template<int K, class V, class Rest>
 struct get_at< int_type_map< map_entry<K,V>, Rest >, K > {
     using type = V;
 };
 
-// get_at ((K V) Rest) Ix = get_at Rest Ix
+// get_at ({K: V} Rest) Ix = get_at Rest Ix
 template<int Ix, int K, class V, class Rest>
 struct get_at< int_type_map< map_entry<K,V>, Rest >, Ix > {
     using type = typename get_at<Rest, Ix>::type;
@@ -88,13 +89,13 @@ struct put_at<nil_map, Ix, V> {
     using type = mk_int_type_map_t< map_entry<Ix, V> >;
 };
 
-// put_at ((K V) Rest) K NewV = ((K NewV) Rest)
+// put_at ({K: V} Rest) K NewV = ({K: NewV} Rest)
 template<int K, class V, class NewV, class Rest>
 struct put_at<int_type_map<map_entry<K, V>, Rest >, K, NewV> {
     using type = int_type_map< map_entry<K, NewV>, Rest >;
 };
 
-// put_at ((HK HV) Rest) K V = ((HK HV) (eval (put_at Rest K V)))
+// put_at ({HK: HV} Rest) K V = ({HK: HV} `(put_at Rest K V))
 template<int HK, int K, class HV, class V, class Rest>
 struct put_at<int_type_map<map_entry<HK, HV>, Rest >, K, V> {
     using type = int_type_map<map_entry<HK, HV>, typename put_at<Rest, K, V>::type>;
@@ -116,13 +117,13 @@ struct remove_at<nil_map, Ix> {
     using type = nil_map;
 };
 
-// remove_at ((K V) Rest) K = Rest
+// remove_at ({K: V} Rest) K = Rest
 template<int K, class V, class Rest>
 struct remove_at<int_type_map<map_entry<K, V>, Rest >, K> {
     using type = Rest;
 };
 
-// remove_at ((HK HV) Rest) K = ((HK HV) (eval remove_at Rest K))
+// remove_at ({HK: HV} Rest) K = ({HK: HV} `(remove_at Rest K))
 template<int HK, int K, class HV, class Rest>
 struct remove_at<int_type_map<map_entry<HK, HV>, Rest >, K> {
     using type = int_type_map<map_entry<HK, HV>, typename remove_at<Rest, K>::type>;
@@ -138,7 +139,7 @@ using remove_at_t = typename remove_at<Map, K>::type;
 template<class Map, int Ix>
 struct contains_at;
 
-// contains_at ((K V) Rest) K = true
+// contains_at ({K: V} Rest) K = true
 template<int K, class V, class Rest>
 struct contains_at< int_type_map< map_entry<K,V>, Rest >, K > {
     static constexpr auto value = true;
@@ -146,7 +147,7 @@ struct contains_at< int_type_map< map_entry<K,V>, Rest >, K > {
     constexpr operator bool() { return value; }
 };
 
-// contains_at ((K V) Rest) Ix = contains_at Rest Ix
+// contains_at ({K: V} Rest) Ix = contains_at Rest Ix
 template<int Ix, int K, class V, class Rest>
 struct contains_at< int_type_map< map_entry<K,V>, Rest >, Ix > {
     static constexpr auto value = contains_at<Rest, Ix>::value;
@@ -210,7 +211,7 @@ struct merge_maps<nil_map, nil_map> {
     using type = nil_map;
 };
 
-// merge_maps ((K V) Rest) Map1 = merge_maps Rest $ put_at K (merge V (get_at K Map1)) Map1
+// merge_maps ({K: V} Rest) Map1 = merge_maps Rest $ put_at K (merge V (get_at K Map1)) Map1
 template<int K, class V, class Rest, class Map1>
 struct merge_maps<int_type_map<map_entry<K, V>, Rest>, Map1> {
     using existing = get_at_t<Map1, K>;
@@ -249,11 +250,22 @@ template<class H, class T> struct type_list{};
 struct nil{};
 
 // type map -> type list
+// the idea is to turn a map from index to type into a corresponding type array (here, type_list)
+// filling all the missing indices with `none` type
+// e.g.:
+/*
+ * { (0: A), (1: B) } -> [A, B]
+ * { (2: A), (1: B), (3: C), (5: F) } -> [None, B, A, C, None, F]
+ *
+ * */
+// we need a starting index to simplify recursion
 template<class Map, int Start = 0> struct map2list;
-template<int N>
-struct map2list< nil_map, N > {
+// an empty map turns into an empty list, obviously
+template<int N> struct map2list< nil_map, N > {
     using type = nil;
 };
+// map2list Map N = `(get_at Map N) :: `(map2list (remove_at Map N))
+// XXX: this is a very naive implementation
 template<class HEntry, class Rest, int N>
 struct map2list< int_type_map<HEntry, Rest>, N> {
     using arg = int_type_map<HEntry, Rest>;

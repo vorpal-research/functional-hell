@@ -1,7 +1,13 @@
 /*
  * generic_operators.hpp
+ * author: Mikhail Beliaev
+ * A set of operators similar to the ones found in <functional>, but with templates moved down
+ * to operator level. This means that instead of
+ *      std::transform(a, b, c, e, std::plus<int>{});
+ * you can write
+ *      std::transform(a, b, c, e, plus{});
+ * and not care about argument types
  */
-
 #ifndef GENERIC_OPERATORS_HPP_
 #define GENERIC_OPERATORS_HPP_
 
@@ -9,6 +15,8 @@
 
 namespace functional_hell {
 namespace generic_operations {
+
+// with operators.def, this is pretty straightforward
 
 #define PROCESS_BINARY(STDDEF, OP) \
     struct generic_ ## STDDEF { \
@@ -43,6 +51,8 @@ namespace generic_operations {
     };
 
 #include "operators.def"
+
+// we also provide guys for common other operations: indexing, calls, typical collection ops
 
 struct generic_index {
     template<class Lhv, class Rhv>

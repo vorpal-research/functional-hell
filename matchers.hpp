@@ -1,8 +1,10 @@
 /*
  * matchers.hpp
+ * author: Mikhail Beliaev
  *
- *  Created on: Nov 29, 2013
- *      Author: belyaev
+ * ML-style pattern matching for C++
+ * As ambitious as that
+ * Ideas based on scala pattern matching and std::bind
  */
 
 #ifndef MATCHERS_HPP_
@@ -16,6 +18,7 @@
 namespace functional_hell {
 namespace matchers {
 
+// a type you should return from unapply()
 template<class ...Elems> using storage_t = match_result<impl_::wrapped_t<Elems>...>;
 
 template<class ...Elems>
@@ -23,6 +26,7 @@ storage_t<Elems...> make_storage(Elems&&... elems) {
     return storage_t<Elems...>{ std::forward<Elems>(elems)... };
 }
 
+/*************************************************************************************************/
 
 namespace impl_ {
 
@@ -69,16 +73,14 @@ template<class T> struct no_ref_c<match_reference<T>&> { using type = T; };
 template<class T> struct no_ref_c<const match_reference<T>&> { using type = T; };
 template<class T> struct no_ref_c<match_reference<T>&&> { using type = T; };
 
-template<class T>
-using no_ref = typename no_ref_c<T>::type;
+template<class T> using no_ref = typename no_ref_c<T>::type;
 
 template<class T> struct lower_ref { using type = T; };
 template<class T> struct lower_ref<match_reference<T>> { using type = T&; };
 template<class T> struct lower_ref<match_reference<T>&> { using type = T&; };
 template<class T> struct lower_ref<match_reference<T>&&> { using type = T&; };
 
-template<class T>
-using lower_ref_t = typename lower_ref<T>::type;
+template<class T> using lower_ref_t = typename lower_ref<T>::type;
 
 template< class T >
 T& unwrap( T& t ) {
@@ -88,7 +90,6 @@ template<class T>
 T& unwrap(match_reference<T> ref) {
     return ref.get();
 }
-
 
 /*************************************************************************************************/
 
@@ -100,6 +101,7 @@ struct matcher {};
 
 /*************************************************************************************************/
 
+// matcher for constants: matching is essentially an equality check
 template<class H>
 struct constant_matcher: matcher {
     template<class V> using elements = impl_::nil_map;
@@ -136,6 +138,8 @@ using toMatcher_t = typename toMatcher<T>::type;
 
 /*************************************************************************************************/
 
+// matcher for complex structures with unapply and such: matching boils down to breaking values
+// with unapply and passing results to lower-level matchers
 template<class Lam, class ...Args>
 struct tree_matcher: matcher {
 
@@ -181,6 +185,7 @@ struct tree_matcher: matcher {
 
 /*************************************************************************************************/
 
+// placeholder is not really a matcher: it matches anything and stores it into the match result object
 template<std::size_t N>
 struct placeholder : matcher {
 
@@ -200,10 +205,10 @@ struct placeholder : matcher {
 
 /*************************************************************************************************/
 
+// ignore is not a matcher at all: it matches anything and does nothing about it, hence the name
 struct ignore : matcher {
 
-    template<class V>
-    using elements = impl_::nil_map;
+    template<class V> using elements = impl_::nil_map;
 
     template<class T, class V>
     bool unapply_impl(T&, V&&) const {
