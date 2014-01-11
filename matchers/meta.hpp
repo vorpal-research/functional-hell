@@ -144,7 +144,7 @@ template<int K, class V, class Rest>
 struct contains_at< int_type_map< map_entry<K,V>, Rest >, K > {
     static constexpr auto value = true;
 
-    constexpr operator bool() { return value; }
+    constexpr operator bool() const { return value; }
 };
 
 // contains_at ({K: V} Rest) Ix = contains_at Rest Ix
@@ -152,7 +152,7 @@ template<int Ix, int K, class V, class Rest>
 struct contains_at< int_type_map< map_entry<K,V>, Rest >, Ix > {
     static constexpr auto value = contains_at<Rest, Ix>::value;
 
-    constexpr operator bool() { return value; }
+    constexpr operator bool() const { return value; }
 };
 
 // contains_at () Ix = false
@@ -160,7 +160,7 @@ template<int Ix>
 struct contains_at< nil_map, Ix > {
     static constexpr auto value = false;
 
-    constexpr operator bool() { return value; }
+    constexpr operator bool() const { return value; }
 };
 
 /*************************************************************************************************/

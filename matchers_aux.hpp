@@ -101,7 +101,7 @@ struct Switcher {
         return Tie(pat...) >> vals;
     }
 
-    constexpr operator bool() { return guard; }
+    constexpr operator bool() const { return guard; }
     bool off() { guard = false; return true; }
 };
 
