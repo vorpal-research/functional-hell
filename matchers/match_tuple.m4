@@ -2,6 +2,7 @@ changequote(`~_{',`}_~')dnl
 dnl // We really change those quotes only to support 
 dnl // syntax highlighting in editors, sorry for that :( */
 changequote(~_{``}_~,~_{''}_~)dnl /* dunno lol */
+changecom(///)dnl
 dnl // first things first - define a classic FOR macro
 dnl
 define(
