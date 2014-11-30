@@ -141,6 +141,15 @@ class match_sequence {
     It end_;
 
 public:
+    using reference = typename std::iterator_traits<It>::reference;
+    using const_reference = typename std::add_const<reference>::type;
+    using pointer = typename std::iterator_traits<It>::pointer;
+    using value_type = typename std::iterator_traits<It>::value_type;
+    using iterator = It;
+    using const_iterator = It;
+    using difference_type = typename std::iterator_traits<It>::difference_type;
+    using size_type = size_t;
+
     match_sequence(It begin, It end): begin_(begin), end_(end) {};
 
     It begin() const { return begin_; }
