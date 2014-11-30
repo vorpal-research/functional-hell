@@ -60,7 +60,7 @@ int main () {
         auto m = Person_(_2, 43, _) >> pers;
         assert(m);
         assert(m->_2 == "Mike");
-        assert(!m->_1);
+        assert(!m->_1); // m->_1 has type 'none', which is convertible to false
     }
 
     {

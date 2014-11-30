@@ -3411,18 +3411,22 @@ public:
     }
 
     match_tuple<Args...>* operator->() {
+        if(!success) return nullptr;
         return &data;
     }
 
     const match_tuple<Args...>* operator->() const {
+        if(!success) return nullptr;
         return &data;
     }
 
     match_tuple<Args...>& operator()(){
+        if(!success) throw 0;// FIXME
         return data;
     }
 
     const match_tuple<Args...>& operator()() const{
+        if(!success) throw 0;// FIXME
         return data;
     }
 
