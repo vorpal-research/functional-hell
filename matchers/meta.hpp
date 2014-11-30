@@ -14,7 +14,9 @@ namespace impl_ {
 
 /*************************************************************************************************/
 // placeholder class representing, well, nothing
-struct none{};
+struct none{
+    explicit constexpr operator bool () const{ return false; }
+};
 
 /*************************************************************************************************/
 // int-to-type map entry, essentially a pair of an int and a type
@@ -283,6 +285,21 @@ struct map2list< int_type_map<HEntry, Rest>, N> {
 // sleek form
 template<class Map>
 using map2list_t = typename map2list<Map>::type;
+
+template<class Tup, class A>
+struct tuple_append_c;
+template<class A, class ...Args>
+struct tuple_append_c<std::tuple<Args...>, A> {
+    typedef std::tuple<Args..., A> type;
+};
+template<class Tup, class A> using tuple_append = typename tuple_append_c<Tup, A>::type;
+
+
+
+template<class Lam, class TL, class N>
+struct apply_first_N_t {
+    
+};
 
 } /* namespace impl_ */
 } /* namespace matchers */

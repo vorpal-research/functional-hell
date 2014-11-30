@@ -42,7 +42,7 @@ namespace matchers {
 /*************************************************************************************************/
 namespace impl_ {
 
-struct void_ {};
+typedef none void_;
 
 } /* namespace impl_ */
 
@@ -78,7 +78,10 @@ FOR(``N'',1,LIMIT,``
 
     match_tuple() : void_1{}FOR(``I'',2,LIMIT,``,AUTOWRAP(I,8)``void_''I{}'') {}
 
-    match_tuple(const match_tuple& other) {dnl
+    template<
+        class ``UArg1''FOR(``I'',2,LIMIT,``,AUTOWRAP(I,7)class ``UArg''I'')
+    >
+    match_tuple(const match_tuple<``UArg1''FOR(``I'',2,LIMIT,``,AUTOWRAP(I,12)``UArg''I'')>& other) {dnl
 FOR(``N'',1,LIMIT,``
         if(other.``is_set_''N``()'') ``set_''N``(other._''N``)'';dnl
 '')
@@ -93,7 +96,10 @@ FOR(``N'',1,LIMIT,``
 '')
     } 
 
-    match_tuple(match_tuple&& other) {dnl
+    template<
+        class ``UArg1''FOR(``I'',2,LIMIT,``,AUTOWRAP(I,7)class ``UArg''I'')
+    >
+    match_tuple(match_tuple<``UArg1''FOR(``I'',2,LIMIT,``,AUTOWRAP(I,12)``UArg''I'')>&& other) {dnl
 FOR(``N'',1,LIMIT,``
         if(other.``is_set_''N``()'') ``set_''N``(''std::move(other.``_''N));dnl
 '')
@@ -147,19 +153,32 @@ public:
         return &data;
     }
 
+    match_tuple<Args...>& operator()(){
+        return data;
+    }
+
+    const match_tuple<Args...>& operator()() const{
+        return data;
+    }
+
     explicit operator bool() {
         return success;
     }
 
     match_result(): null{}, success{false} {};
-    match_result(const match_result& other): null{}, success(other.success) {
+
+    template<class ...UArgs>
+    match_result(const match_result<UArgs...>& other): 
+        null{}, success((bool)other) {
         if(success) {
-            construct(other.data);
+            construct(other());
         }
     }
-    match_result(match_result&& other): null{}, success(other.success) {
+    template<class ...UArgs>
+    match_result(match_result<UArgs...>&& other): 
+        null{}, success((bool)other) {
         if(success) {
-            construct(std::move(other.data));
+            construct(std::move(other()));
         }
     }
     template<class ...U>

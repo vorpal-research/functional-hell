@@ -19,7 +19,7 @@ namespace matchers {
 /*************************************************************************************************/
 namespace impl_ {
 
-struct void_ {};
+typedef none void_;
 
 } /* namespace impl_ */
 
@@ -55,7 +55,10 @@ struct match_tuple<Arg1> {
 
     match_tuple() : void_1{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1
+    >
+    match_tuple(const match_tuple<UArg1>& other) {
         if(other.is_set_1()) set_1(other._1);
     } 
 
@@ -66,7 +69,10 @@ struct match_tuple<Arg1> {
         set_1(std::forward<U1>(u1));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1
+    >
+    match_tuple(match_tuple<UArg1>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
     } 
 
@@ -120,7 +126,10 @@ struct match_tuple<Arg1, Arg2> {
 
     match_tuple() : void_1{}, void_2{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2
+    >
+    match_tuple(const match_tuple<UArg1, UArg2>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
     } 
@@ -133,7 +142,10 @@ struct match_tuple<Arg1, Arg2> {
         set_2(std::forward<U2>(u2));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2
+    >
+    match_tuple(match_tuple<UArg1, UArg2>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
     } 
@@ -205,7 +217,10 @@ struct match_tuple<Arg1, Arg2, Arg3> {
 
     match_tuple() : void_1{}, void_2{}, void_3{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -220,7 +235,10 @@ struct match_tuple<Arg1, Arg2, Arg3> {
         set_3(std::forward<U3>(u3));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -310,7 +328,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4> {
 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -327,7 +348,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4> {
         set_4(std::forward<U4>(u4));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -435,7 +459,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5> {
 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -454,7 +481,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5> {
         set_5(std::forward<U5>(u5));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -580,7 +610,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6> {
 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -601,7 +634,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6> {
         set_6(std::forward<U6>(u6));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -745,7 +781,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7> {
 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -768,7 +807,10 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7> {
         set_7(std::forward<U7>(u7));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -931,7 +973,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8> {
 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -957,7 +1003,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8> {
         set_8(std::forward<U8>(u8));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -1139,7 +1189,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9> {
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -1168,7 +1222,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9> {
         set_9(std::forward<U9>(u9));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -1368,7 +1426,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10> 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -1399,7 +1461,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10> 
         set_10(std::forward<U10>(u10));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -1617,7 +1683,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -1650,7 +1720,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_11(std::forward<U11>(u11));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -1886,7 +1960,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{}, void_12{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -1921,7 +1999,11 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_12(std::forward<U12>(u12));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -2176,7 +2258,12 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{}, void_12{}, void_13{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -2213,7 +2300,12 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_13(std::forward<U13>(u13));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -2486,7 +2578,12 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{}, void_12{}, void_13{}, void_14{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -2525,7 +2622,12 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_14(std::forward<U14>(u14));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -2817,7 +2919,13 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{}, void_12{}, void_13{}, void_14{}, void_15{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14,
+        class UArg15
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14, UArg15>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -2859,7 +2967,13 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_15(std::forward<U15>(u15));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14,
+        class UArg15
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14, UArg15>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -3169,7 +3283,13 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
     match_tuple() : void_1{}, void_2{}, void_3{}, void_4{}, void_5{}, void_6{}, void_7{}, void_8{},
         void_9{}, void_10{}, void_11{}, void_12{}, void_13{}, void_14{}, void_15{}, void_16{} {}
 
-    match_tuple(const match_tuple& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14,
+        class UArg15, class UArg16
+    >
+    match_tuple(const match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14, UArg15, UArg16>& other) {
         if(other.is_set_1()) set_1(other._1);
         if(other.is_set_2()) set_2(other._2);
         if(other.is_set_3()) set_3(other._3);
@@ -3213,7 +3333,13 @@ struct match_tuple<Arg1, Arg2, Arg3, Arg4, Arg5, Arg6, Arg7, Arg8, Arg9, Arg10, 
         set_16(std::forward<U16>(u16));
     } 
 
-    match_tuple(match_tuple&& other) {
+    template<
+        class UArg1, class UArg2, class UArg3, class UArg4, class UArg5, class UArg6, class UArg7,
+        class UArg8, class UArg9, class UArg10, class UArg11, class UArg12, class UArg13, class UArg14,
+        class UArg15, class UArg16
+    >
+    match_tuple(match_tuple<UArg1, UArg2, UArg3, UArg4, UArg5, UArg6, UArg7, UArg8, UArg9, UArg10, UArg11, UArg12,
+        UArg13, UArg14, UArg15, UArg16>&& other) {
         if(other.is_set_1()) set_1(std::move(other._1));
         if(other.is_set_2()) set_2(std::move(other._2));
         if(other.is_set_3()) set_3(std::move(other._3));
@@ -3292,19 +3418,32 @@ public:
         return &data;
     }
 
+    match_tuple<Args...>& operator()(){
+        return data;
+    }
+
+    const match_tuple<Args...>& operator()() const{
+        return data;
+    }
+
     explicit operator bool() {
         return success;
     }
 
     match_result(): null{}, success{false} {};
-    match_result(const match_result& other): null{}, success(other.success) {
+
+    template<class ...UArgs>
+    match_result(const match_result<UArgs...>& other): 
+        null{}, success((bool)other) {
         if(success) {
-            construct(other.data);
+            construct(other());
         }
     }
-    match_result(match_result&& other): null{}, success(other.success) {
+    template<class ...UArgs>
+    match_result(match_result<UArgs...>&& other): 
+        null{}, success((bool)other) {
         if(success) {
-            construct(std::move(other.data));
+            construct(std::move(other()));
         }
     }
     template<class ...U>

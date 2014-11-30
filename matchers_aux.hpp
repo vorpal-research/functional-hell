@@ -133,8 +133,8 @@ struct NilExtractor {
     }
 };
 
-auto Cons = make_pattern(ConsExtractor{});
-auto Nil = make_pattern(NilExtractor{})();
+static auto Cons = make_pattern(ConsExtractor{});
+static auto Nil = make_pattern(NilExtractor{})();
 
 } /* namespace matchers */
 } /* namespace functional_hell */
