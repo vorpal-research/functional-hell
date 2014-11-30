@@ -416,8 +416,8 @@ struct break_matcher: matcher {
 
     template<class T, class V>
     bool unapply_impl(T& storage, V&& v) const {
-        auto start = std::begin(std::forward<V>(v));
-        auto end = std::end(std::forward<V>(v));
+        auto start = std::begin(impl_::unwrap(v));
+        auto end = std::end(impl_::unwrap(v));
         auto mid0 = std::next(start, sizeof...(Args) - divider::right - 1);
         auto mid1 = std::next(end, -divider::right);
 
