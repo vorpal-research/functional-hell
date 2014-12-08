@@ -420,7 +420,7 @@ struct take_n<0, Args...> {
 template<size_t N, class H, class ...Args>
 struct take_n<N, H, Args...> {
     using progress = take_n<N-1, Args...>;
-    using type = invoke<progress>;
+    using type = invoke<ta_cons<H, invoke<progress>>>;
 };
 template<size_t N, class ...Args>
 using take_n_t = invoke<take_n<N, Args...>>;
