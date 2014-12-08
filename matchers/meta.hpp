@@ -441,6 +441,50 @@ auto take_and_apply(F f, Args&&... args) -> decltype(take_and_apply_impl<F, take
     return take_and_apply_impl<F, take_n_t<N, Args...>>::apply(f, std::forward<Args>(args)...);
 }
 
+template<class TA, template<class...>class Templt>
+struct apply_boxed;
+template<template<class...>class Templt, class... Args>
+struct apply_boxed<type_array<Args...>, Templt>
+{
+    using type = Templt<Args...>;
+};
+template<class TA, template<class...>class Templt>
+using apply_boxed_t = invoke<apply_boxed<TA, Templt>>;
+
+template<size_t N, template<class...>class Templt, class...Args>
+struct drop_and_apply_template;
+template<template<class...>class Templt, class...Args>
+struct drop_and_apply_template<0, Templt, Args...> {
+    using type = Templt<Args...>;
+};
+template<size_t N, template<class...>class Templt, class HArg, class...TArgs>
+struct drop_and_apply_template<N, Templt, HArg, TArgs...> {
+    using progress = drop_and_apply_template<N-1, Templt, TArgs...>;
+    using type = invoke<progress>;
+};
+template<size_t N, template<class...>class Templt, class...Args>
+using drop_and_apply_template_t = invoke<drop_and_apply_template<N, Templt, Args...>>;
+
+template<size_t N, template<class...>class Templt, class...Args>
+struct take_and_apply_template {
+    using ta = take_n_t<N, Args...>;
+    using type = invoke<apply_boxed<ta, Templt>>;
+};
+template<size_t N, template<class...>class Templt, class...Args>
+using take_and_apply_template_t = invoke<take_and_apply_template<N, Templt, Args...>>;
+
+template<template<class>class Predicate, class... Args>
+struct find_first_arg;
+template<template<class>class Predicate>
+struct find_first_arg<Predicate> {
+    static constexpr size_t value = ~0U;
+};
+template<template<class>class Predicate, class H, class ...T>
+struct find_first_arg<Predicate, H, T...> {
+    using progress = find_first_arg<Predicate, T...>;
+    static constexpr size_t value = Predicate<H>::value ? 0 : (progress::value+1) ;
+};
+
 template<class Tup, class A>
 struct tuple_append_c;
 template<class A, class ...Args>
