@@ -159,12 +159,12 @@ template<class T, class = void>
 struct toMatcher;
 
 template<class T>
-struct toMatcher<T, typename std::enable_if<std::is_base_of<matcher, T>::value>::type> {
-    using type = T;
+struct toMatcher<T, typename std::enable_if<std::is_base_of<matcher, impl_::decay_t<T>>::value>::type> {
+    using type = impl_::decay_t<T>;
 };
 
 template<class T>
-struct toMatcher<T, typename std::enable_if<!std::is_base_of<matcher, T>::value>::type> {
+struct toMatcher<T, typename std::enable_if<!std::is_base_of<matcher, impl_::decay_t<T>>::value>::type> {
     using type = constant_matcher<T>;
 };
 
@@ -177,9 +177,11 @@ using toMatcher_t = typename toMatcher<T>::type;
 
 template<class Matcher>
 struct expand_matcher: matcher {
+    using base_t = Matcher;
+
     Matcher base;
 
-    expand_matcher(Matcher base): base(base) {};
+    expand_matcher(const Matcher& base): base(base) {};
 
 };
 
@@ -193,7 +195,7 @@ struct tree_matcher: matcher {
     Lam lam;
     std::tuple<impl_::toMatcher_t<Args>...> matchers;
 
-    tree_matcher(Lam lam, Args... args): lam(lam), matchers{ args... } {}
+    tree_matcher(Lam lam, const Args&... args): lam(lam), matchers{ args... } {}
 
     template<class V>
     using unapplied = decltype(
@@ -242,7 +244,7 @@ struct seq_matcher: matcher {
 
     std::tuple<impl_::toMatcher_t<Args>...> matchers;
 
-    seq_matcher(Args... args): matchers{ args... } {}
+    seq_matcher(const Args&... args): matchers{ args... } {}
 
     template<class V>
     using unapplied = decltype(
@@ -281,6 +283,14 @@ struct seq_matcher: matcher {
 };
 
 namespace impl_ {
+
+struct make_seq_matcher {
+    template<class ...Args>
+    seq_matcher<impl_::toMatcher_t<Args>...> operator()(Args&&... args) {
+        return seq_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
+    }
+};
+
 
 template<class SM, class A>
 struct arg_append_c;
@@ -381,23 +391,40 @@ struct nthArg<N, H, Args...> {
     }
 };
 
+template<class T>
+struct IsExpandMatcher {
+    static constexpr bool value = false;
+};
+
+template<class T>
+struct IsExpandMatcher<expand_matcher<T>> {
+    static constexpr bool value = true;
+};
+
 }// namespace impl_
 
 template<class ...Args>
 struct break_matcher: matcher {
-    using divider = impl_::Breaker<seq_matcher<>, impl_::toMatcher_t<Args>...>;
-    using Pre = typename divider::Pre;
-    using Mid = typename divider::Mid;
-    using Pos = typename divider::Pos;
+    static constexpr size_t WHERE = impl_::find_first_arg<impl_::IsExpandMatcher, Args...>::value;
+    static constexpr size_t TOTAL = sizeof...(Args);
 
-    impl_::toMatcher_t<Pre> pre;
-    impl_::toMatcher_t<Mid> mid ;
-    impl_::toMatcher_t<Pos> pos;
+    //using divider = impl_::Breaker<seq_matcher<>, impl_::toMatcher_t<Args>...>;
+    //using Pre = typename divider::Pre;
+    //using Mid = typename divider::Mid;
+    //using Pos = typename divider::Pos;
+    using TA = impl_::type_array<impl_::toMatcher_t<Args>...>;
+    using Pre = impl_::take_and_apply_template_t<WHERE, seq_matcher, impl_::toMatcher_t<Args>...>;
+    using Mid = typename impl_::nth_element_t<TA, WHERE>::base_t;
+    using Pos = impl_::drop_and_apply_template_t<WHERE+1, seq_matcher, impl_::toMatcher_t<Args>...>;
 
-    break_matcher(impl_::toMatcher_t<Args>... args): 
-        pre(impl_::seq_matcher_maker_pre<Pre>::apply(args...)),
-        mid(impl_::nthArg<sizeof...(Args)-divider::right-1, impl_::toMatcher_t<Args>...>::get(args...).base),
-        pos(impl_::seq_matcher_maker_post<sizeof...(Args)-divider::right, impl_::toMatcher_t<Args>...>::apply(args...)) {
+    impl_::decay_t<impl_::toMatcher_t<Pre>> pre;
+    impl_::decay_t<impl_::toMatcher_t<Mid>> mid ;
+    impl_::decay_t<impl_::toMatcher_t<Pos>> pos;
+
+    break_matcher(const Args&... args): 
+        pre(impl_::take_and_apply<WHERE>(impl_::make_seq_matcher{}, args...)),
+        mid(impl_::nth_element<TA, WHERE>::apply(args...).base),
+        pos(impl_::drop_and_apply<WHERE+1>(impl_::make_seq_matcher{}, args...)) {
 
     }
 
@@ -418,8 +445,8 @@ struct break_matcher: matcher {
     bool unapply_impl(T& storage, V&& v) const {
         auto start = std::begin(impl_::unwrap(v));
         auto end = std::end(impl_::unwrap(v));
-        auto mid0 = std::next(start, sizeof...(Args) - divider::right - 1);
-        auto mid1 = std::next(end, -divider::right);
+        auto mid0 = std::next(start, WHERE);
+        auto mid1 = std::next(end, -(TOTAL - WHERE - 1));
 
         bool first = pre.unapply_impl(storage, proxy<V>{ start, mid0 });
         if(!first) return false;
@@ -450,26 +477,26 @@ struct break_matcher: matcher {
 };
 
 template<class ...Args>
-seq_matcher<Args...> Seq(const Args&... args) {
-    return seq_matcher<Args...>{ args... };
+seq_matcher<impl_::toMatcher_t<Args>...> Seq(Args&&... args) {
+    return seq_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
 }
 
 template<class ...Args>
 typename std::enable_if<
-    impl_::Breaker<seq_matcher<>, impl_::toMatcher_t<Args>...>::found,
-    break_matcher<Args...> 
+    impl_::find_first_arg<impl_::IsExpandMatcher, impl_::toMatcher_t<Args>...>::value != ~0U,
+    break_matcher<impl_::toMatcher_t<Args>...> 
 >::type
-BSeq(const Args&... args) {
-    return break_matcher<Args...>{ args... };
+BSeq(Args&&... args) {
+    return break_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
 }
 
 template<class ...Args>
 typename std::enable_if<
-    !impl_::Breaker<seq_matcher<>, impl_::toMatcher_t<Args>...>::found,
-    seq_matcher<Args...> 
+    impl_::find_first_arg<impl_::IsExpandMatcher, impl_::toMatcher_t<Args>...>::value == ~0U,
+    seq_matcher<impl_::toMatcher_t<Args>...> 
 >::type
-BSeq(const Args&... args) {
-    return seq_matcher<Args...>{ args... };
+BSeq(Args&&... args) {
+    return seq_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
 }
 
 /*************************************************************************************************/
@@ -481,7 +508,7 @@ struct or_matcher: matcher {
     impl_::toMatcher_t<Lhv> lhv;
     impl_::toMatcher_t<Rhv> rhv;
 
-    or_matcher(impl_::toMatcher_t<Lhv> lhv, impl_::toMatcher_t<Rhv> rhv): lhv(lhv), rhv(rhv) {}
+    or_matcher(const Lhv& lhv, const Rhv& rhv): lhv(lhv), rhv(rhv) {}
 
     template<class V>
     using elements = typename Lhv::template elements<V>;
@@ -524,8 +551,8 @@ struct or_matcher: matcher {
 };
 
 template<class L, class R>
-or_matcher<L, R> operator | (const L& l, const R& r) {
-    return or_matcher<L, R> (l, r);
+or_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator | (const L& l, const R& r) {
+    return or_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> (l, r);
 }
 
 /*************************************************************************************************/
@@ -537,7 +564,7 @@ struct and_matcher: matcher {
     impl_::toMatcher_t<Lhv> lhv;
     impl_::toMatcher_t<Rhv> rhv;
 
-    and_matcher(impl_::toMatcher_t<Lhv> lhv, impl_::toMatcher_t<Rhv> rhv): lhv(lhv), rhv(rhv) {}
+    and_matcher(const Lhv& lhv, const Rhv& rhv): lhv(lhv), rhv(rhv) {}
 
     template<class V>
     using elements = impl_::merge_maps_t<typename Lhv::template elements<V>, typename Rhv::template elements<V>>;
@@ -572,8 +599,8 @@ struct and_matcher: matcher {
 };
 
 template<class L, class R>
-and_matcher<L, R> operator & (const L& l, const R& r) {
-    return and_matcher<L, R> (l, r);
+and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator & (const L& l, const R& r) {
+    return and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>>(l, r);
 }
 /*************************************************************************************************/
 

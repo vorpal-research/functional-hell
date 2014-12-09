@@ -357,8 +357,9 @@ template<class H, class ...Rest>
 struct nth_element<type_array<H, Rest...>, 0>{
     using type = H;
 
-    static H&& apply(H&& h, Rest&&... rest) {
-        return h;
+    template<class HI, class ...RestI>
+    static HI&& apply(HI&& h, RestI&&...) {
+        return std::forward<HI>(h);
     }
 };
 template<size_t N, class H, class ...Rest>
@@ -366,8 +367,9 @@ struct nth_element<type_array<H, Rest...>, N>{
     using progress = nth_element<type_array<Rest...>, N-1>;
     using type = invoke<progress>;
 
-    static type&& apply(H&& h, Rest&&... rest) {
-        return progress::apply(std::forward<Rest>(rest)...);
+    template<class HI, class ...RestI>
+    static auto apply(HI&& h, RestI&&... rest) -> decltype(progress::apply(std::forward<RestI>(rest)...)) {
+        return progress::apply(std::forward<RestI>(rest)...);
     }
 };
 template<size_t N>
@@ -405,7 +407,6 @@ struct drop_and_apply_impl {
         return progress::apply(f, std::forward<Args>(args)...);
     }
 };
-
 template<size_t N, class F, class ...Args>
 auto drop_and_apply(F f, Args&&... args) -> decltype(drop_and_apply_impl<N, F>::apply(f, std::forward<Args>(args)...)) {
     return drop_and_apply_impl<N, F>::apply(f, std::forward<Args>(args)...);
@@ -415,6 +416,10 @@ template<size_t N, class ...Args>
 struct take_n;
 template<class ...Args>
 struct take_n<0, Args...> {
+    using type = type_array<>;
+};
+template<class H, class ...Args>
+struct take_n<0, H, Args...> {
     using type = type_array<>;
 };
 template<size_t N, class H, class ...Args>
@@ -427,12 +432,18 @@ using take_n_t = invoke<take_n<N, Args...>>;
 
 template<class F, class Taken>
 struct take_and_apply_impl;
-
 template<class F, class ...TakenArgs>
 struct take_and_apply_impl<F, type_array<TakenArgs...>> {
     template<class ...AdditionalArgs>
     static auto apply(F f, TakenArgs&&... args, AdditionalArgs&&...) -> decltype(f(std::forward<TakenArgs>(args)...)) {
         return f(std::forward<TakenArgs>(args)...);
+    }
+};
+template<class F>
+struct take_and_apply_impl<F, type_array<>> {
+    template<class ...AdditionalArgs>
+    static auto apply(F f, AdditionalArgs&&...) -> decltype(f()) {
+        return f();
     }
 };
 
@@ -456,6 +467,10 @@ struct drop_and_apply_template;
 template<template<class...>class Templt, class...Args>
 struct drop_and_apply_template<0, Templt, Args...> {
     using type = Templt<Args...>;
+};
+template<template<class...>class Templt, class HArg, class...Args>
+struct drop_and_apply_template<0, Templt, HArg, Args...> {
+    using type = Templt<HArg, Args...>;
 };
 template<size_t N, template<class...>class Templt, class HArg, class...TArgs>
 struct drop_and_apply_template<N, Templt, HArg, TArgs...> {
@@ -482,7 +497,9 @@ struct find_first_arg<Predicate> {
 template<template<class>class Predicate, class H, class ...T>
 struct find_first_arg<Predicate, H, T...> {
     using progress = find_first_arg<Predicate, T...>;
-    static constexpr size_t value = Predicate<H>::value ? 0 : (progress::value+1) ;
+    static constexpr size_t value = Predicate<H>::value ? 0 : 
+                                    progress::value == ~0U ? ~0U : 
+                                    progress::value + 1;
 };
 
 template<class Tup, class A>
@@ -492,6 +509,9 @@ struct tuple_append_c<std::tuple<Args...>, A> {
     typedef std::tuple<Args..., A> type;
 };
 template<class Tup, class A> using tuple_append = typename tuple_append_c<Tup, A>::type;
+
+template<class T>
+using decay_t = invoke<std::decay<T>>;
 
 } /* namespace impl_ */
 } /* namespace matchers */
