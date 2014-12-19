@@ -11,6 +11,7 @@
 #define MATCHERS_HPP_
 
 #include <tuple>
+#include <functional>
 
 #include "matchers/match_structures.hpp"
 #include "matchers/meta.hpp"
@@ -157,16 +158,6 @@ namespace impl_ {
 
 template<class T, class = void>
 struct toMatcher;
-
-template<class T>
-struct toMatcher<T, typename std::enable_if<std::is_base_of<matcher, impl_::decay_t<T>>::value>::type> {
-    using type = impl_::decay_t<T>;
-};
-
-template<class T>
-struct toMatcher<T, typename std::enable_if<!std::is_base_of<matcher, impl_::decay_t<T>>::value>::type> {
-    using type = constant_matcher<T>;
-};
 
 template<class T>
 using toMatcher_t = typename toMatcher<T>::type;
@@ -321,7 +312,7 @@ struct break_matcher: matcher {
     impl_::decay_t<impl_::toMatcher_t<Mid>> mid ;
     impl_::decay_t<impl_::toMatcher_t<Pos>> pos;
 
-    break_matcher(const Args&... args): 
+    break_matcher(const Args&... args):
         pre(impl_::take_and_apply<WHERE>(impl_::make_seq_matcher{}, args...)),
         mid(impl_::nth_element<TA, WHERE>::apply(args...).base),
         pos(impl_::drop_and_apply<WHERE+1>(impl_::make_seq_matcher{}, args...)) {
@@ -384,7 +375,7 @@ seq_matcher<impl_::toMatcher_t<Args>...> Seq(Args&&... args) {
 template<class ...Args>
 typename std::enable_if<
     impl_::find_first_arg<impl_::IsExpandMatcher, impl_::toMatcher_t<Args>...>::value != ~0U,
-    break_matcher<impl_::toMatcher_t<Args>...> 
+    break_matcher<impl_::toMatcher_t<Args>...>
 >::type
 BSeq(Args&&... args) {
     return break_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
@@ -393,7 +384,7 @@ BSeq(Args&&... args) {
 template<class ...Args>
 typename std::enable_if<
     impl_::find_first_arg<impl_::IsExpandMatcher, impl_::toMatcher_t<Args>...>::value == ~0U,
-    seq_matcher<impl_::toMatcher_t<Args>...> 
+    seq_matcher<impl_::toMatcher_t<Args>...>
 >::type
 BSeq(Args&&... args) {
     return seq_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
@@ -416,7 +407,7 @@ struct or_matcher: matcher {
     template<class T, class V>
     bool unapply_impl(T& storage, V&& v) const {
         static_assert(std::is_same<
-                      impl_::map2result_t<typename Rhv::template elements<V>>, 
+                      impl_::map2result_t<typename Rhv::template elements<V>>,
                       impl_::map2result_t<typename Lhv::template elements<V>>
                       >::value, "Or patterns can only be used with an identical set of placeholders");
 
@@ -508,6 +499,11 @@ and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator & (const L& l
 template<std::size_t N>
 struct placeholder : matcher {
 
+    placeholder() = default;
+    placeholder(const placeholder&) = default;
+    template<class U>
+    placeholder(U&& u) {}
+
     template<class V>
     using elements = impl_::int_type_map< impl_::map_entry< N, V >, impl_::nil_map >;
 
@@ -525,6 +521,8 @@ struct placeholder : matcher {
         return expand_matcher<placeholder>{*this};
     }
 };
+
+
 
 /*************************************************************************************************/
 
@@ -545,6 +543,8 @@ struct ignore : matcher {
 
 /*************************************************************************************************/
 
+namespace placeholders{
+
 static placeholder<0> _1;
 static placeholder<1> _2;
 static placeholder<2> _3;
@@ -553,11 +553,48 @@ static placeholder<4> _5;
 static placeholder<5> _6;
 static placeholder<6> _7;
 static placeholder<7> _8;
+static placeholder<8> _9;
 static ignore _;
+
+} /* namespace placeholders */
 
 /*************************************************************************************************/
 
+namespace impl_ {
+
+template<class T>
+using is_matcher = std::is_base_of<matcher, impl_::decay_t<T>>;
+
+template<class T>
+struct toMatcher<T, invoke<std::enable_if<is_matcher<T>::value>>> {
+    using type = impl_::decay_t<T>;
+};
+
+template<class T>
+struct toMatcher<T, invoke<std::enable_if<std::is_placeholder<T>::value && !is_matcher<T>::value>>> {
+    using type = placeholder<std::is_placeholder<T>::value - 1>;
+};
+
+template<class T>
+struct toMatcher<T, invoke<std::enable_if<!std::is_placeholder<T>::value && !is_matcher<T>::value>>> {
+    using type = constant_matcher<T>;
+};
+
+} /* namespace impl_ */
+
 } /* namespace matchers */
 } /* namespace functional_hell */
+
+namespace std {
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<0>> : public integral_constant<int, 1> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<1>> : public integral_constant<int, 2> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<2>> : public integral_constant<int, 3> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<3>> : public integral_constant<int, 4> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<4>> : public integral_constant<int, 5> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<5>> : public integral_constant<int, 6> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<6>> : public integral_constant<int, 7> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<7>> : public integral_constant<int, 8> {};
+    template<> struct is_placeholder<functional_hell::matchers::placeholder<8>> : public integral_constant<int, 9> {};
+}
 
 #endif /* MATCHERS_HPP_ */

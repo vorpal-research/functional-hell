@@ -8,7 +8,8 @@
 template<class Con>
 void print_container(std::ostream& ost, const Con& con) {
     using namespace functional_hell::matchers;
-    
+    using namespace functional_hell::matchers::placeholders;
+
     SWITCH(con) {
         NAMED_CASE(m, Cons(_1, _2) ) {
             ost << m->_1;
@@ -16,7 +17,7 @@ void print_container(std::ostream& ost, const Con& con) {
                 ost << ", " << el;
             }
         }
-        
+
         CASE( Nil ) ost << "<empty =(>";
     }
 }

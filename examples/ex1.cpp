@@ -6,6 +6,7 @@
 #include "matchers_fancy_syntax.h"
 
 using namespace functional_hell::matchers;
+using namespace functional_hell::matchers::placeholders;
 
 class Type {
 public:

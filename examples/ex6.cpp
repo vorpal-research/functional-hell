@@ -10,6 +10,7 @@
 #include "matchers_aux.hpp"
 
 using namespace functional_hell::matchers;
+using namespace functional_hell::matchers::placeholders;
 
 struct Person {
     std::string name;
@@ -113,7 +114,7 @@ int main () {
         auto m = (Seq(_, _2, _3, 3) | Seq(_3, _2, _, 4)) >> nums;
         assert(!m);
     }
-    
+
     {
         Person other{ "Jim", 22, std::vector<int>{ 5, 6, 9, 5, 7, 9, 3 } };
         auto m = PersonAlt_(_2, _1, Seq(_, _3, _, _, _, _, _)) >> other;
