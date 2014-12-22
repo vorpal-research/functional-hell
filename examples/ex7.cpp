@@ -1,6 +1,7 @@
 #include <iostream>
 #include <memory>
 #include <string>
+#include <unordered_map>
 
 // provide the -I.. flag
 #include "matchers_aux.hpp"
@@ -222,6 +223,39 @@ bool operator==(Expr::Ptr lhv, Expr::Ptr rhv) {
     return false;
 }
 
+namespace std
+{
+    template<>
+    struct hash<Expr::Ptr>
+    {
+        size_t combine(size_t h1, size_t h2) const {
+            return h1 ^ (h2 << 1);
+        }
+
+        std::size_t hash_(const std::string& s) const {
+            return std::hash<std::string>{}(s);
+        }
+
+        std::size_t hash_(const Expr::Ptr& e) const
+        {
+            SWITCH(e) {
+                CASE(nullptr)
+                    return 0;
+                NAMED_CASE(m, Var_(_1))
+                    return hash_(m->_1);
+                NAMED_CASE(m, App_(_1, _2))
+                    return combine(hash_(m->_1), hash_(m->_2));
+                NAMED_CASE(m, Abs_(_1, _2))
+                    return combine(hash_(m->_1), hash_(m->_2));
+            }
+        }
+
+        std::size_t operator()(const Expr::Ptr& e) const {
+            return hash_(e);
+        }
+    };
+}
+
 Expr::Ptr substituteVar(Expr::Ptr where, const std::string& from, Expr::Ptr to) {
     SWITCH(where) {
         CASE(Var_(from)) return to;
@@ -254,6 +288,8 @@ Expr::Ptr innerEval(Expr::Ptr what) {
     }
     return what;
 }
+
+using Environment = std::unordered_map<Expr::Ptr, Type::Ptr>;
 
 int main() {
     auto exExpr = App(Abs("x", App(Var("f"), Var("x"))), Var("2"));
