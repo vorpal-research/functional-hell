@@ -234,7 +234,11 @@ namespace std
     struct hash<Expr::Ptr>
     {
         size_t combine(size_t h1, size_t h2) const {
-            return h1 ^ (h2 << 1);
+            return h2 + 0x9e3779b9 + (h1 << 6) + (h1 >> 2);
+        }
+        
+        size_t combine(size_t h1, size_t h2, size_t h3) const {
+            return combine(combine(h1, h2), h3);
         }
 
         std::size_t hash_(const std::string& s) const {
@@ -247,11 +251,11 @@ namespace std
                 CASE(nullptr)
                     return 0;
                 NAMED_CASE(m, Var_(_1))
-                    return hash_(m->_1);
+                    return combine(1, hash_(m->_1));
                 NAMED_CASE(m, App_(_1, _2))
-                    return combine(hash_(m->_1), hash_(m->_2));
+                    return combine(2, hash_(m->_1), hash_(m->_2));
                 NAMED_CASE(m, Abs_(_1, _2))
-                    return combine(hash_(m->_1), hash_(m->_2));
+                    return combine(3, hash_(m->_1), hash_(m->_2));
             }
         }
 
