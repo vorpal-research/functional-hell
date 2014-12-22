@@ -67,6 +67,11 @@ struct AppExtractor {
 
 auto App_ = make_pattern(AppExtractor{});
 
+template<class X, class Y>
+auto App(X&& x, Y&& y) -> decltype(App_(std::forward<X>(x), std::forward<Y>(y))) {
+    return App_(std::forward<X>(x), std::forward<Y>(y));
+}
+
 class AbsExpr: public Expr {
     std::string var;
     Expr::Ptr expr;
