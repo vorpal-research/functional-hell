@@ -131,6 +131,9 @@ public:
         return lhv == rhv.get();
     }
 
+    friend std::ostream& operator<<(std::ostream& ost, match_reference mr) {
+        return ost << mr.get();
+    }
 };
 
 /*************************************************************************************************/

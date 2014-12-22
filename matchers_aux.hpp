@@ -1,3 +1,6 @@
+#ifndef MATCHERS_AUX_HPP
+#define MATCHERS_AUX_HPP
+
 #include <tuple>
 
 #include "matchers.hpp"
@@ -138,3 +141,5 @@ static auto Nil = make_pattern(NilExtractor{})();
 
 } /* namespace matchers */
 } /* namespace functional_hell */
+
+#endif /* MATCHERS_AUX_HPP */

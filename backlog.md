@@ -6,3 +6,7 @@
 - Create something like `make_pattern`, but for sequences
 - Modeling after Scala's `unapplySeq`
 - Consider everyone getting the same functionality as current `BSeq` magics
+
+#Other#
+- Try to make tuple-based pattern compile errors more clear (now when matcher
+  contains 2 expressions and the pattern 1, the error is huge and cryptic)
