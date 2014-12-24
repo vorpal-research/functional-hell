@@ -139,6 +139,37 @@ struct NilExtractor {
 static auto Cons = make_pattern(ConsExtractor{});
 static auto Nil = make_pattern(NilExtractor{})();
 
+template<class Predicate>
+struct GuardExtractor {
+    Predicate pred;
+
+    template<class T>
+    auto unapply(T&& t) const -> storage_t<> {
+        if(pred(std::forward<T>(t))) return true;
+        else return false;
+    }
+};
+
+template<class Predicate>
+tree_matcher<GuardExtractor<Predicate>> Guard(Predicate p) {
+    return { GuardExtractor<Predicate>{ p } };
+}
+
+template<class ViewFunction>
+struct ViewExtractor {
+    ViewFunction func;
+
+    template<class T>
+    auto unapply(T&& t) const -> storage_t<decltype(func(std::forward<T>(t)))> {
+        return make_storage(func(std::forward<T>(t)));
+    }
+};
+
+template<class ViewFunction, class Arg>
+tree_matcher<ViewExtractor<ViewFunction>, impl_::array_to_cpointer<Arg>> View(ViewFunction func, Arg&& arg) {
+    return { ViewExtractor<ViewFunction>{ func }, std::forward<Arg>(arg) };
+}
+
 } /* namespace matchers */
 } /* namespace functional_hell */
 
