@@ -10,3 +10,7 @@
 #Other#
 - Try to make tuple-based pattern compile errors more clear (now when matcher
   contains 2 expressions and the pattern 1, the error is huge and cryptic)
+
+#Ideas for patterns#
+- Regexp patterns ???
+- 
