@@ -15,9 +15,9 @@
 - Regexp patterns ???
 - Repeating patterns
   
-  ```
-  #!cpp
-    CASE(BSeq(1, *(Repeating(2)), 3))
-  ```
+```
+#!cpp
+CASE(BSeq(1, *(Repeating(2)), 3))
+```
 
 - `At` for maps
