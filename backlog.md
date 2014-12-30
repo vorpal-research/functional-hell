@@ -15,7 +15,8 @@
 - Regexp patterns ???
 - Repeating patterns
   
-  ``` cpp
+  ```
+  #!cpp
     CASE(BSeq(1, *(Repeating(2)), 3))
   ```
 
