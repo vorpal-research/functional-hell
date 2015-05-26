@@ -50,7 +50,7 @@ struct FunctorExtractor {
 
 template<class Lam>
 pattern<FunctorExtractor<Lam>> function_as_pattern(const Lam& l) {
-    return FunctorExtractor{l};
+    return {{l}};
 }
 
 template<std::size_t ...Ixs> struct int_sequence {};
