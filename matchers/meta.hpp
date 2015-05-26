@@ -518,6 +518,16 @@ template<class Tup, class A> using tuple_append = typename tuple_append_c<Tup, A
 template<class T>
 using decay_t = invoke<std::decay<T>>;
 
+template<class T>
+std::true_type has_equality_f(T* tp, decltype(*tp == *tp)* = 0);
+std::false_type has_equality_f(...);
+
+template<class T>
+using has_equality = decltype(has_equality_f((T*)nullptr));
+
+template<class V>
+using enable_if_t = typename std::enable_if<V::value>::type;
+
 } /* namespace impl_ */
 } /* namespace matchers */
 } /* namespace functional_hell */

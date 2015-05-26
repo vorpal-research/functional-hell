@@ -132,6 +132,26 @@ T& unwrap(match_reference<T> ref) {
 
 } /* namespace impl_ */
 
+
+/*************************************************************************************************/
+
+template<class T, class = void>
+struct compare_trait {
+   // static_assert(sizeof(T) <= 0, "You cannot use two similar placeholders for type that do not define eithe `==` or custom functional_hell::matchers::compare_trait");
+    template<class U, class V>
+    bool operator()(U&& lhv, V&& rhv) const {
+        return false;
+    }
+};
+
+template<class T>
+struct compare_trait<T, impl_::enable_if_t<impl_::has_equality<T>>> {
+    template<class U, class V>
+    bool operator()(U&& lhv, V&& rhv) const {
+        return lhv == rhv;
+    }
+};
+
 /*************************************************************************************************/
 
 struct matcher {};
@@ -149,7 +169,8 @@ struct constant_matcher: matcher {
 
     template<class T, class V>
     bool unapply_impl(T&, V&& value) const{
-        return data == std::forward<V>(value);
+        auto cmp = compare_trait<impl_::no_ref<V>>{};
+        return cmp(std::forward<V>(value), data);
     }
 };
 
@@ -504,6 +525,17 @@ and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator & (const L& l
 }
 /*************************************************************************************************/
 
+namespace impl_ {
+
+    template<class U, class V>
+    bool compare_equal(U&& lhv, V&& rhv) {
+        using TT = typename std::common_type<no_ref<U>, no_ref<V>>::type;
+        compare_trait<no_ref<TT>> cp;
+        return cp(lhv, rhv);
+    }
+
+} /* namespace impl_ */
+
 // placeholder is not really a matcher: it matches anything and stores it into the match result object
 template<std::size_t N>
 struct placeholder : matcher {
@@ -515,7 +547,7 @@ struct placeholder : matcher {
     bool unapply_impl(T& storage, V&& value) const{
         if(!storage) storage.construct();
         if(is_set<N>(storage)) {
-            return get<N>(storage) == std::forward<V>(value);
+            return impl_::compare_equal(get<N>(storage), value);
         }
         set<N>(storage, std::forward<V>(value));
         return true;
