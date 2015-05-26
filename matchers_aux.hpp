@@ -39,6 +39,20 @@ struct IdentityExtractor {
 
 static auto Id = make_pattern(IdentityExtractor{});
 
+template<class Lam>
+struct FunctorExtractor {
+    Lam lam;
+
+    template<class ...Args> auto unapply(Args&&... values) const -> decltype(lam(std::forward<Args>(values)...)) {
+        return lam(std::forward<Args>(values)...);
+    }
+};
+
+template<class Lam>
+pattern<FunctorExtractor<Lam>> function_as_pattern(const Lam& l) {
+    return FunctorExtractor{l};
+}
+
 template<std::size_t ...Ixs> struct int_sequence {};
 
 template<std::size_t H, class Seq> struct cons_sequence;

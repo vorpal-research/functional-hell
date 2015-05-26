@@ -41,5 +41,7 @@ int main() {
     auto a = Struct{ {}, {} };
     assert($Struct(_1, _2) >> a);
     assert(!($Struct(_1, _1) >> a)); // comparing incomparables yields false
+
+    
 }
 
