@@ -7,6 +7,8 @@
 #include "matchers_aux.hpp"
 
 using namespace functional_hell::matchers;
+using namespace std::placeholders;
+using functional_hell::matchers::placeholders::_;
 
 struct pairExtractor {
     template<class A, class B>

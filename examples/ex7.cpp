@@ -10,6 +10,7 @@
 #include "matchers_aux.hpp"
 
 using namespace functional_hell::matchers;
+using namespace functional_hell::matchers::placeholders;
 
 struct Incomparable {
 };
