@@ -534,7 +534,7 @@ struct placeholder : matcher {
     placeholder() = default;
     placeholder(const placeholder&) = default;
     template<class U>
-    placeholder(U&& u) {}
+    placeholder(U&&) {}
 
     template<class V>
     using elements = impl_::int_type_map< impl_::map_entry< N, V >, impl_::nil_map >;
