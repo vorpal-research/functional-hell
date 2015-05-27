@@ -374,7 +374,7 @@ struct nth_element<type_array<H, Rest...>, N> : metafunc {
     using type = invoke<progress>;
 
     template<class HI, class ...RestI>
-    static auto apply(HI&& h, RestI&&... rest) -> decltype(progress::apply(std::forward<RestI>(rest)...)) {
+    static auto apply(HI&&, RestI&&... rest) -> decltype(progress::apply(std::forward<RestI>(rest)...)) {
         return progress::apply(std::forward<RestI>(rest)...);
     }
 };

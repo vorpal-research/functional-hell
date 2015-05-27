@@ -79,7 +79,7 @@ struct unapplier {
 };
 template<class Storage, class MatchRes, class ...Args>
 struct unapplier<0, Storage, MatchRes, Args...> {
-    static bool doIt(const std::tuple<Args...>& matchers, Storage&, MatchRes&&) {
+    static bool doIt(const std::tuple<Args...>&, Storage&, MatchRes&&) {
         return true;
     }
 };
@@ -97,7 +97,7 @@ struct seq_unapplier {
 };
 template<class Storage, class MatchIter, class ...Args>
 struct seq_unapplier<0, Storage, MatchIter, Args...> {
-    static bool doIt(const std::tuple<Args...>& matchers, Storage&, MatchIter begin, MatchIter end) {
+    static bool doIt(const std::tuple<Args...>&, Storage&, MatchIter begin, MatchIter end) {
         return begin == end;
     }
 };
@@ -140,7 +140,7 @@ template<class T, class = void>
 struct compare_trait {
    // static_assert(sizeof(T) <= 0, "You cannot use two similar placeholders for type that do not define eithe `==` or custom functional_hell::matchers::compare_trait");
     template<class U, class V>
-    bool operator()(U&& lhv, V&& rhv) const {
+    bool operator()(U&&, V&&) const {
         return false;
     }
 };
