@@ -15,7 +15,8 @@
 - Regexp patterns ???
 - Repeating patterns
 ```cpp
-CASE(BSeq(1, *(Repeating(2)), 3))
+CASE(BSeq(1, *(Many(2)), 3)) -> [1,2,2,2,3] works
+CASE(BSeq(1, *(Many(_1)), 3)) -> [1, 9, 9, 9, 9, 3] works and _1 == 9
 ```
 
 - `At` for maps
