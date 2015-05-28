@@ -148,4 +148,20 @@ int main () {
         assert(sub == test);
     }
 
+    {
+        std::vector<int> nums{1,2,2,2,4};
+        auto m = (BSeq(1, Repeat(2), 4)) >> nums;
+        assert(m);
+        auto m2 = (BSeq(1, Repeat(_1), 4)) >> nums;
+        assert(m2);
+        assert(m2->_1 == 2);
+    }
+
+    {
+        std::vector<int> nums{1,2,3,2,4};
+        auto m = (BSeq(1, Repeat(_1), 4)) >> nums;
+        assert(m);
+        assert(!m);
+    }
+
 }

@@ -101,6 +101,17 @@ struct seq_unapplier<0, Storage, MatchIter, Args...> {
         return begin == end;
     }
 };
+
+// call unapply_impl on all tree elements
+template<class Storage, class MatchIter, class Arg>
+struct repeated_unapplier {
+    static bool doIt(const std::tuple<Arg>& matchers, Storage& storage, MatchIter begin, MatchIter end) {
+        if(begin == end) return false;
+
+        if(!std::get<0>(matchers).unapply_impl(storage, *begin)) return false;
+        return doIt(matchers, storage, ++begin, end);
+    }
+};
 /*************************************************************************************************/
 
 template<class T> struct no_ref_c { using type = T; };
@@ -251,6 +262,50 @@ struct tree_matcher: matcher {
 /*************************************************************************************************/
 
 // matcher for sequences
+template<class Arg>
+struct repeated_matcher: matcher {
+
+    impl_::toMatcher_t<Arg> matcher;
+
+    repeated_matcher(const Arg& arg): matcher{ args... } {}
+
+    template<class V>
+    using unapplied = decltype(
+        std::begin(std::forward<impl_::lower_ref_t<V>>(std::declval<impl_::lower_ref_t<V>>()))
+    );
+
+    template<class V>
+    using elements = typename impl_::applicate< match_sequence<unapplied<V>>, impl_::toMatcher_t<Arg> >::type;
+
+    template<class T, class V>
+    bool unapply_impl(T& storage, V&& v) const {
+
+        return impl_::repeat_unapplier<T, unapplied<V>, impl_::toMatcher_t<Arg>>
+            ::doIt(matchers, storage, std::begin(impl_::unwrap(v)), std::end(impl_::unwrap(v)));
+    }
+
+    template<class V>
+    impl_::map2result_t<elements<V>> match(V&& v) const{
+        impl_::map2result_t<elements<V>> ret;
+        ret.construct();
+
+        if(!unapply_impl(ret, std::forward<V>(v))) return impl_::map2result_t<elements<V>>();
+
+        return std::move(ret);
+    }
+
+    template<class V>
+    impl_::map2result_t<elements<V>> operator >> (V&& v) const{
+        return match(std::forward<V>(v));
+    }
+
+    expand_matcher<repeated_matcher> operator*() const {
+        return expand_matcher<repeated_matcher>{*this};
+    }
+
+};
+
+// matcher for sequences
 template<class ...Args>
 struct seq_matcher: matcher {
 
@@ -391,6 +446,11 @@ struct break_matcher: matcher {
 template<class ...Args>
 seq_matcher<impl_::toMatcher_t<Args>...> Seq(Args&&... args) {
     return seq_matcher<impl_::toMatcher_t<Args>...>{ std::forward<Args>(args)... };
+}
+
+template<class Arg>
+seq_matcher<impl_::toMatcher_t<Arg>> Repeat(Arg&& arg) {
+    return seq_matcher<impl_::toMatcher_t<Arg>>{ std::forward<Arg>(arg) };
 }
 
 template<class ...Args>
