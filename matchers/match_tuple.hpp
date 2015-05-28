@@ -3383,6 +3383,11 @@ private:
 
 /*************************************************************************************************/
 // poor man's option
+
+
+struct no_match_t{};
+static no_match_t no_match;
+
 template<class ...Args>
 class match_result {
     union {
@@ -3435,6 +3440,7 @@ public:
     }
 
     match_result(): null{}, success{false} {};
+    match_result(no_match_t): null{}, success{false} {};
 
     template<class ...UArgs>
     match_result(const match_result<UArgs...>& other): 
@@ -3462,6 +3468,7 @@ class match_result<> {
     bool val;
 public:
     match_result(): val(false) {};
+    match_result(no_match_t): val(false) {};
     match_result(bool v): val(v) {};
     operator bool() {
         return val;
