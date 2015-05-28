@@ -165,6 +165,10 @@ int main () {
         assert(m2);
         auto m3 = (BSeq(1, *Repeat( Id(2) | Id(3) ), 4)) >> nums;
         assert(m3);
+        auto m4 = ( _1 & 2 | _1 & 3 ) >> 3; 
+        assert(m4);// sic!
+        auto m5 = (BSeq(1, *Repeat( _1 & 2 | _1 & 3 ), 4)) >> nums; 
+        assert(!m5);// sic! note that (1,2,2,2,2,4) or (1,3,3,3,3,4) would match.
     }
 
 }
