@@ -105,11 +105,15 @@ struct seq_unapplier<0, Storage, MatchIter, Args...> {
 // call unapply_impl on all tree elements
 template<class Storage, class MatchIter, class Arg>
 struct repeated_unapplier {
-    static bool doIt(const std::tuple<Arg>& matchers, Storage& storage, MatchIter begin, MatchIter end) {
+    static bool doIt(const Arg& matcher, Storage& storage, MatchIter begin, MatchIter end) {
         if(begin == end) return false;
 
-        if(!std::get<0>(matchers).unapply_impl(storage, *begin)) return false;
-        return doIt(matchers, storage, ++begin, end);
+        if(!matcher.unapply_impl(storage, *begin)) return false;
+
+        ++begin;
+
+        if(begin == end) return true;
+        return doIt(matcher, storage, begin, end);
     }
 };
 /*************************************************************************************************/
@@ -267,7 +271,7 @@ struct repeated_matcher: matcher {
 
     impl_::toMatcher_t<Arg> matcher;
 
-    repeated_matcher(const Arg& arg): matcher{ args... } {}
+    repeated_matcher(const Arg& arg): matcher{ arg } {}
 
     template<class V>
     using unapplied = decltype(
@@ -280,8 +284,8 @@ struct repeated_matcher: matcher {
     template<class T, class V>
     bool unapply_impl(T& storage, V&& v) const {
 
-        return impl_::repeat_unapplier<T, unapplied<V>, impl_::toMatcher_t<Arg>>
-            ::doIt(matchers, storage, std::begin(impl_::unwrap(v)), std::end(impl_::unwrap(v)));
+        return impl_::repeated_unapplier<T, unapplied<V>, impl_::toMatcher_t<Arg>>
+            ::doIt(matcher, storage, std::begin(impl_::unwrap(v)), std::end(impl_::unwrap(v)));
     }
 
     template<class V>
@@ -449,8 +453,8 @@ seq_matcher<impl_::toMatcher_t<Args>...> Seq(Args&&... args) {
 }
 
 template<class Arg>
-seq_matcher<impl_::toMatcher_t<Arg>> Repeat(Arg&& arg) {
-    return seq_matcher<impl_::toMatcher_t<Arg>>{ std::forward<Arg>(arg) };
+repeated_matcher<impl_::toMatcher_t<Arg>> Repeat(Arg&& arg) {
+    return repeated_matcher<impl_::toMatcher_t<Arg>>{ std::forward<Arg>(arg) };
 }
 
 template<class ...Args>
