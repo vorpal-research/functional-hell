@@ -574,10 +574,6 @@ struct and_matcher: matcher {
 
 };
 
-template<class L, class R>
-and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator & (const L& l, const R& r) {
-    return and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>>(l, r);
-}
 /*************************************************************************************************/
 
 namespace impl_ {
@@ -675,6 +671,12 @@ struct toMatcher<T, invoke<std::enable_if<!std::is_placeholder<T>::value && !is_
 };
 
 } /* namespace impl_ */
+
+template<class L, class R,
+    class = std::enable_if_t<impl_::is_matcher<L>::value || impl_::is_matcher<R>::value || std::is_placeholder<L>::value || std::is_placeholder<R>::value>>
+    and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>> operator & (const L& l, const R& r) {
+return and_matcher<impl_::toMatcher_t<L>, impl_::toMatcher_t<R>>(l, r);
+}
 
 } /* namespace matchers */
 } /* namespace functional_hell */
