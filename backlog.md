@@ -14,3 +14,10 @@
 #Ideas for patterns#
 - Regexp patterns ???
 - `At` for maps
+- Property-based patterns:
+
+```
+#!cpp
+    NAMED_CASE(m, Record(_x = 23, _y = Pair('a', _1))) std::cerr << m->_1 << std::endl;
+```
+
