@@ -256,6 +256,11 @@ struct tree_matcher: matcher {
         return match(std::forward<V>(v));
     }
 
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
+    }
+
     expand_matcher<tree_matcher> operator*() const {
         return expand_matcher<tree_matcher>{*this};
     }
@@ -303,6 +308,11 @@ struct repeated_matcher: matcher {
         return match(std::forward<V>(v));
     }
 
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
+    }
+
     expand_matcher<repeated_matcher> operator*() const {
         return expand_matcher<repeated_matcher>{*this};
     }
@@ -345,6 +355,11 @@ struct seq_matcher: matcher {
     template<class V>
     impl_::map2result_t<elements<V>> operator >> (V&& v) const{
         return match(std::forward<V>(v));
+    }
+
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
     }
 
     expand_matcher<seq_matcher> operator*() const {
@@ -442,6 +457,11 @@ struct break_matcher: matcher {
         return match(std::forward<V>(v));
     }
 
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
+    }
+
     expand_matcher<break_matcher> operator*() const {
         return expand_matcher<break_matcher>{*this};
     }
@@ -521,6 +541,11 @@ struct or_matcher: matcher {
         return match(std::forward<V>(v));
     }
 
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
+    }
+
     expand_matcher<or_matcher> operator*() const {
         return expand_matcher<or_matcher>{*this};
     }
@@ -561,6 +586,11 @@ struct and_matcher: matcher {
     template<class V>
     impl_::map2result_t<elements<V>> operator >> (V&& v) const{
         return match(std::forward<V>(v));
+    }
+
+    template<class V>
+    bool operator == (V&& v) const{
+        return static_cast<bool>(match(std::forward<V>(v)));
     }
 
     expand_matcher<and_matcher> operator*() const {
